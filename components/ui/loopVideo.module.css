@@ -1,0 +1,13 @@
+/* Sits over the photograph inside a .frame (which positions and crops it).
+   The element selector outranks a section's image class passed alongside, so
+   the fade survives while that class's hover zoom still applies. */
+video.video {
+  opacity: 0;
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+
+video.video[data-playing="true"] {
+  opacity: 1;
+}

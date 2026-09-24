@@ -1,0 +1,431 @@
+/* ==========================================================================
+   Navigation — fixed bar + full-screen mobile overlay
+   Breakpoints: <768 mobile · 768–1023 tablet · 1024+ links visible
+   ========================================================================== */
+
+/* Sits at the top of the document (no positioned ancestor), scrolls away with
+   the page and drives the navbar's scrolled state. */
+.sentinel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: var(--nav-h);
+  pointer-events: none;
+}
+
+/* --- Bar ----------------------------------------------------------------- */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  /* Replaces the scrollbar gutter while the body is locked — no sideways jump. */
+  padding-right: var(--scrollbar-gap, 0px);
+  background-color: transparent;
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    backdrop-filter var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+  /* First beat of the page-load sequence: the bar settles in, then the hero
+     copy follows (HeroContent starts at 0.2s). CSS, so the global
+     reduced-motion rule makes it instant. */
+  animation: navIn 0.9s var(--ease-out) both;
+}
+
+@keyframes navIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Scrolled: smoked glass with a warm tint and a copper-brown hairline. */
+.header[data-scrolled="true"] {
+  background-color: rgb(var(--bg-alt-rgb) / 0.68);
+  /* Unprefixed only — the build adds the -webkit- alias for Safari. Writing
+     both by hand makes lightningcss collapse them to the prefixed one, which
+     Chromium does not support. */
+  backdrop-filter: blur(18px) saturate(130%);
+  border-bottom-color: var(--border);
+  box-shadow: 0 1px 24px rgb(0 0 0 / 0.28);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  min-height: var(--nav-h);
+  /* One discrete step per scroll-state change, not a continuous animation.
+     The bar is fixed, so it reflows only its own subtree. */
+  transition: min-height var(--duration-base) var(--ease-out);
+}
+
+.header[data-scrolled="true"] .inner {
+  min-height: var(--nav-h-compact);
+}
+
+/* --- Logo ---------------------------------------------------------------- */
+.logo {
+  flex: none;
+  /* The wordmark is short; the link's box is a full touch target. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-family: var(--font-display-stack);
+  font-size: clamp(1.125rem, 0.95rem + 0.8vw, 1.6rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  color: var(--foreground);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .logo:hover {
+    color: var(--accent-hover);
+  }
+}
+
+/* --- Desktop links ------------------------------------------------------- */
+.nav {
+  display: none;
+}
+
+.navList {
+  display: flex;
+  align-items: center;
+  gap: clamp(var(--space-4), 0.5rem + 1.4vw, var(--space-7));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navLink {
+  position: relative;
+  display: block;
+  padding-block: var(--space-2);
+  font-size: var(--text-label);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--foreground);
+  white-space: nowrap;
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+/* Hairline that opens from the centre outward. */
+.navLink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor 25%, currentColor 75%, transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .navLink:hover {
+    color: var(--accent-hover);
+  }
+
+  .navLink:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+.navLink[data-active="true"] {
+  color: var(--accent-hover);
+}
+
+.navLink[data-active="true"]::after {
+  transform: scaleX(1);
+}
+
+/* Landscape tablets get the desktop bar: a full 44px under a finger,
+   with the hairline kept where it sits under a mouse. */
+@media (pointer: coarse) {
+  .navLink {
+    padding-block: 0.875rem;
+  }
+
+  .navLink::after {
+    bottom: 0.3125rem;
+  }
+}
+
+/* --- Actions ------------------------------------------------------------- */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: none;
+}
+
+/* Visibility lives on a wrapper rather than the button: `.btn` in globals.css
+   sets `display` with the same specificity and wins on source order, so a
+   `display: none` on the button itself would never apply. `display: contents`
+   keeps the button as a direct flex child of .actions, and the custom
+   properties below still inherit through it.
+   Softly rounded rather than a full pill, and more compact than the page's
+   default button. */
+.ctaWrap {
+  display: none;
+  --btn-radius: 10px;
+  --btn-min-h: 2.75rem;
+  --btn-pad: var(--space-5);
+  /* 12px floor, as elsewhere on the site. */
+  --btn-font-size: 0.75rem;
+  --btn-tracking: 0.16em;
+}
+
+@media (hover: hover) {
+  .ctaWrap:hover .cta {
+    transform: translateY(-1px);
+  }
+}
+
+/* --- Hamburger ----------------------------------------------------------- */
+.burger {
+  display: grid;
+  place-items: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  margin-right: calc(var(--space-3) * -1);
+  color: var(--foreground);
+  border-radius: 50%;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--duration-fast) var(--ease-out);
+  /* Above the overlay, so it can morph into the close control. */
+  position: relative;
+  z-index: 2;
+}
+
+.burgerBox {
+  position: relative;
+  width: 24px;
+  height: 12px;
+}
+
+.burgerLine {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background-color: currentColor;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.burgerLine:first-child {
+  top: 0;
+}
+
+.burgerLine:last-child {
+  bottom: 0;
+}
+
+.burger[data-open="true"] .burgerLine:first-child {
+  transform: translateY(5.25px) rotate(45deg);
+}
+
+.burger[data-open="true"] .burgerLine:last-child {
+  transform: translateY(-5.25px) rotate(-45deg);
+}
+
+@media (hover: hover) {
+  .burger:hover {
+    color: var(--accent-hover);
+  }
+}
+
+/* --- Mobile overlay ------------------------------------------------------ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  background:
+    radial-gradient(60% 40% at 85% 100%, rgb(var(--accent-rgb) / 0.12), transparent),
+    var(--background);
+  /* Keep scroll chaining from reaching the locked page behind. */
+  overscroll-behavior: contain;
+  overflow-y: auto;
+}
+
+.overlayInner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-8);
+  width: 100%;
+  max-width: calc(var(--container-max) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  /* Clears the fixed bar above. */
+  padding-top: calc(var(--nav-h) + var(--space-6));
+  padding-bottom: var(--space-7);
+}
+
+.overlayList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.overlayLink {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding-block: var(--space-2);
+  font-family: var(--font-display-stack);
+  font-size: clamp(2.125rem, 1.2rem + 4.6vw, 3.5rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.overlayIndex {
+  font-family: var(--font-body-stack);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.overlayLink[data-active="true"],
+.overlayLink[data-active="true"] .overlayIndex {
+  color: var(--accent);
+}
+
+@media (hover: hover) {
+  .overlayLink:hover {
+    color: var(--accent-hover);
+  }
+}
+
+.overlayFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+
+.overlayCta {
+  --btn-radius: 10px;
+  flex: 1;
+  max-width: 22rem;
+}
+
+.overlayClose {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding-inline: var(--space-2);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.overlayClose span {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+@media (hover: hover) {
+  .overlayClose:hover {
+    color: var(--foreground);
+  }
+}
+
+/* --- Responsive ---------------------------------------------------------- */
+@media (min-width: 768px) {
+  .ctaWrap {
+    display: contents;
+  }
+
+  .overlayInner {
+    padding-bottom: var(--space-8);
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav {
+    display: block;
+  }
+
+  .burger {
+    display: none;
+  }
+
+  .ctaWrap {
+    --btn-min-h: 3rem;
+    --btn-pad: var(--space-6);
+    --btn-font-size: 0.71875rem;
+  }
+}
+
+/* Small laptops (1024–1279): seven links, the logo and the CTA only just
+   miss fitting at full tracking — the CTA ran past the right edge at 1024.
+   Tighten spacing and tracking here rather than dropping anything; the
+   12px type floor stays. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .inner {
+    gap: var(--space-5);
+  }
+
+  .navList {
+    gap: 0.875rem;
+  }
+
+  .navLink {
+    letter-spacing: 0.06em;
+  }
+
+  .ctaWrap {
+    --btn-pad: var(--space-4);
+    --btn-tracking: 0.12em;
+  }
+
+  .ctaWrap .btn__arrow {
+    display: none;
+  }
+}
+
+/* --- Reduced motion ------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .inner {
+    /* Skip the height step; the colour change alone signals the state. */
+    min-height: var(--nav-h);
+  }
+
+  .header[data-scrolled="true"] .inner {
+    min-height: var(--nav-h);
+  }
+
+  .ctaWrap:hover .cta {
+    transform: none;
+  }
+}

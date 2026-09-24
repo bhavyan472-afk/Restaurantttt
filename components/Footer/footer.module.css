@@ -1,0 +1,464 @@
+/* ==========================================================================
+   Footer — the closing scene: brand and a last invitation to the table,
+   then the practical details, then a quiet bottom bar.
+   ========================================================================== */
+
+.footer {
+  position: relative;
+  overflow: clip; /* keeps the backdrop word from widening the page */
+  isolation: isolate;
+  background: var(--background);
+  border-top: 1px solid var(--border);
+}
+
+/* A last ember glow rising from the bottom edge. */
+.footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image: radial-gradient(
+    60% 45% at 50% 100%,
+    rgb(var(--accent-rgb) / 0.1) 0%,
+    transparent 70%
+  );
+}
+
+/* Huge, low-contrast word behind the lower half. Decorative only. */
+.backdrop {
+  position: absolute;
+  left: 50%;
+  bottom: -0.18em;
+  z-index: -1;
+  translate: -50% 0;
+  font-family: var(--font-display-stack);
+  /* 26vw keeps the whole word inside the width on phones too. */
+  font-size: clamp(4.5rem, 26vw, 24rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: rgb(var(--ivory-rgb) / 0.028);
+  pointer-events: none;
+  user-select: none;
+}
+
+.inner {
+  /* Bottom padding clears the chat launcher, which floats bottom-right,
+     so it never covers the bottom bar at the end of the page. */
+  padding-block: var(--section-space-tight) 8.5rem;
+}
+
+/* --- Grid ---------------------------------------------------------------- */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "brand"
+    "cta"
+    "explore"
+    "visit"
+    "contact"
+    "hours"
+    "social";
+  gap: var(--space-7);
+}
+
+.areaBrand { grid-area: brand; }
+.areaCta { grid-area: cta; }
+.areaExplore { grid-area: explore; }
+.areaVisit { grid-area: visit; }
+.areaContact { grid-area: contact; }
+.areaHours { grid-area: hours; }
+.areaSocial { grid-area: social; }
+
+.areaBrand,
+.areaCta,
+.areaExplore,
+.areaVisit,
+.areaContact,
+.areaHours,
+.areaSocial {
+  min-width: 0;
+}
+
+/* --- Brand --------------------------------------------------------------- */
+/* The name is sized to its column (container units), so it stays on one
+   line whether the column is a phone's width or five desktop columns. */
+.areaBrand {
+  container-type: inline-size;
+}
+
+.brandName {
+  font-family: var(--font-display-stack);
+  font-size: clamp(2rem, 12.5cqi, 4.75rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: var(--foreground);
+}
+
+.tagline {
+  margin-top: var(--space-4);
+  color: var(--accent);
+}
+
+.statement {
+  max-width: 38ch;
+  margin-top: var(--space-5);
+  font-size: var(--text-body-lg);
+  line-height: 1.65;
+  color: var(--foreground-soft);
+}
+
+/* --- Reservation CTA ----------------------------------------------------- */
+.cta {
+  position: relative;
+  padding: clamp(var(--space-5), 1rem + 2.5vw, var(--space-7));
+  background-color: rgb(var(--bg-alt-rgb) / 0.6);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+/* The same ember hairline as the form cards. */
+.cta::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(var(--accent-rgb) / 0.7), transparent);
+}
+
+.ctaHeading {
+  max-width: 16ch;
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+
+.ctaText {
+  margin-top: var(--space-3);
+  font-family: var(--font-display-stack);
+  font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  font-style: italic;
+  color: var(--foreground-soft);
+}
+
+/* Two classes: .btn in globals.css would win over one on source order. */
+.cta .ctaButton {
+  margin-top: var(--space-6);
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .cta .ctaButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 32px -14px rgb(var(--accent-rgb) / 0.6);
+  }
+}
+
+/* --- Groups -------------------------------------------------------------- */
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+.groupLabel {
+  margin-bottom: var(--space-4);
+  font-family: var(--font-body-stack);
+  color: var(--accent);
+}
+
+.navList,
+.contactList {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+/* Tall enough to tap comfortably; the .link underline draws in on hover. */
+.navLink,
+.contactLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-bottom: 0;
+  background-position: 0 calc(100% - 0.65rem);
+  color: var(--foreground-soft);
+  opacity: 0.9;
+  transition:
+    background-size var(--duration-base) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    opacity var(--duration-fast) var(--ease-out);
+}
+
+.navLink {
+  font-size: 1.0625rem;
+}
+
+.contactLink {
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+@media (hover: hover) {
+  .navLink:hover,
+  .contactLink:hover {
+    opacity: 1;
+  }
+}
+
+.address {
+  display: flex;
+  flex-direction: column;
+  font-style: normal;
+  line-height: 1.7;
+  color: var(--foreground-soft);
+}
+
+.textAction {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  margin-top: var(--space-3);
+  padding-bottom: 0;
+  background-position: 0 calc(100% - 0.6rem);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.textAction span[aria-hidden] {
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .textAction:hover span[aria-hidden] {
+    transform: translateX(4px);
+  }
+}
+
+/* Days over hours when narrow, side by side when there is room — decided by
+   the column's width, so every row matches. */
+.hours {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+  margin: 0;
+}
+
+.hoursRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(9rem, 50% - 1rem), 1fr));
+  column-gap: var(--space-4);
+  font-size: 0.9375rem;
+  color: var(--foreground-soft);
+}
+
+.hoursRow dd {
+  margin: 0;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.social {
+  display: grid;
+  place-items: center;
+  width: 2.875rem;
+  height: 2.875rem;
+  color: var(--foreground-soft);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .social:hover {
+    color: var(--on-accent);
+    background-color: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+}
+
+.social:focus-visible {
+  border-radius: var(--radius-pill);
+}
+
+.smallNote {
+  margin-top: var(--space-3);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* --- Bottom bar ---------------------------------------------------------- */
+.bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.copyright {
+  letter-spacing: 0.04em;
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  margin: 0;
+}
+
+.legalLink {
+  color: var(--muted);
+}
+
+.legalPending {
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+.backToTop {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--foreground-soft);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.backToTop svg {
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .backToTop:hover {
+    color: var(--accent-hover);
+  }
+
+  .backToTop:hover svg {
+    transform: translateY(-3px);
+  }
+}
+
+/* --- Tablet -------------------------------------------------------------- */
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "brand   brand"
+      "cta     cta"
+      "explore visit"
+      "contact hours"
+      "social  social";
+    gap: var(--space-7) var(--space-6);
+  }
+
+  /* Heading on the left, the button on the right, while the card is full width. */
+  .cta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    column-gap: var(--space-6);
+  }
+
+  .cta .ctaButton {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    margin-top: 0;
+  }
+
+  .bottom {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* --- Laptop and up ------------------------------------------------------- */
+@media (min-width: 1024px) {
+  /* Brand and social on the left, the invitation on the right; then the
+     four practical columns across. */
+  .grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-areas:
+      "brand   brand   brand   brand   brand   . cta     cta     cta     cta     cta   cta"
+      "social  social  social  social  social  . cta     cta     cta     cta     cta   cta"
+      "explore explore visit   visit   visit   visit contact contact contact hours hours hours";
+    grid-template-rows: auto 1fr auto;
+    gap: var(--space-6) var(--space-5);
+  }
+
+  .areaSocial {
+    align-self: end;
+  }
+
+  /* Half width again: back to heading, text, then button. */
+  .cta {
+    display: block;
+  }
+
+  .cta .ctaButton {
+    margin-top: var(--space-6);
+  }
+
+  .areaExplore,
+  .areaVisit,
+  .areaContact,
+  .areaHours {
+    margin-top: var(--space-7);
+  }
+
+  .areaSocial .group {
+    border-top: 0;
+    padding-top: 0;
+  }
+}
+
+/* --- Reduced motion ------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .cta .ctaButton:hover,
+  .social:hover,
+  .textAction:hover span[aria-hidden],
+  .backToTop:hover svg {
+    transform: none;
+  }
+}

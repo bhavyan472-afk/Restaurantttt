@@ -1,0 +1,436 @@
+/* ==========================================================================
+   Dining Experience — oversized heading, a wide cinematic room shot, and the
+   four pillars as editorial rows beside a portrait that stays in view.
+   ========================================================================== */
+
+.section {
+  position: relative;
+  /* Background: the .tone-* class on the element (globals.css). */
+  isolation: isolate;
+}
+
+/* Ambient detail: a low amber pool where the room's image sits, and a fine
+   static grain. Both are painted once — nothing here animates. */
+.section::before,
+.section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.section::before {
+  background-image: radial-gradient(
+    70% 30% at 50% 42%,
+    rgb(var(--accent-rgb) / 0.08) 0%,
+    transparent 70%
+  );
+}
+
+.section::after {
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* --- Intro --------------------------------------------------------------- */
+.intro {
+  display: grid;
+  gap: var(--space-7);
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  color: var(--accent);
+}
+
+.eyebrow::before {
+  content: "";
+  width: clamp(1.5rem, 4vw, 3rem);
+  height: 1px;
+  background-color: var(--accent);
+}
+
+/* Larger than the other section headings: the line is short and it is the
+   section's whole argument. */
+.heading {
+  margin-bottom: var(--space-5);
+  font-family: var(--font-display-stack);
+  font-size: clamp(2.75rem, 1.4rem + 5.4vw, 7rem);
+  font-weight: 300;
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+}
+
+.introText {
+  max-width: 34ch;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 34rem;
+  font-size: var(--text-body-lg);
+  line-height: 1.75;
+  color: var(--foreground-soft);
+}
+
+/* The first line is the thesis; it reads a step brighter. */
+.copy > p:first-child {
+  color: var(--foreground);
+}
+
+.highlight {
+  font-family: var(--font-display-stack);
+  font-size: 1.18em;
+  font-style: italic;
+  line-height: 1;
+  color: var(--foreground);
+}
+
+.closing {
+  margin-top: var(--space-4);
+  font-family: var(--font-display-stack);
+  font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
+  font-style: italic;
+  line-height: 1.35;
+  color: var(--foreground);
+}
+
+.closingLine {
+  display: block;
+}
+
+/* --- Main visual --------------------------------------------------------- */
+.visual {
+  margin-top: var(--space-8);
+}
+
+/* Portrait on phones (its own photograph — see ExperienceVisual), a wide
+   cinematic frame from tablets up. */
+.visualFrame {
+  aspect-ratio: 4 / 5;
+}
+
+.mediaInner {
+  position: absolute;
+  inset: 0;
+}
+
+/* Bleeds past the frame so the parallax drift never exposes an edge. */
+.mediaInner[data-parallax="true"] {
+  inset: -5% 0;
+  will-change: transform;
+}
+
+.photo,
+.visualPlaceholder {
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+/* Candlelit stand-in: warm pools of light at table height across a dark
+   room, brightest at the back where the kitchen would be. */
+.visualPlaceholder {
+  position: absolute;
+  inset: 0;
+  background-color: var(--surface-2);
+  background-image:
+    radial-gradient(40% 30% at 50% 38%, rgb(var(--accent-rgb) / 0.2) 0%, transparent 70%),
+    radial-gradient(14% 12% at 22% 70%, rgb(var(--highlight-rgb) / 0.28) 0%, transparent 70%),
+    radial-gradient(12% 10% at 48% 78%, rgb(var(--highlight-rgb) / 0.22) 0%, transparent 70%),
+    radial-gradient(14% 12% at 76% 68%, rgb(var(--highlight-rgb) / 0.26) 0%, transparent 70%),
+    linear-gradient(to top, rgb(var(--bg-rgb) / 0.6), transparent 60%);
+}
+
+.visualFrame::after {
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .visualFrame:hover .photo,
+  .visualFrame:hover .visualPlaceholder {
+    transform: scale(1.02);
+  }
+
+  .visualFrame:hover::after {
+    opacity: 0.7;
+  }
+}
+
+/* Descriptive labels under the image, separated by small ember dots. */
+.details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3) var(--space-5);
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.detail {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.detail::before {
+  content: "";
+  flex: none;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--accent);
+}
+
+/* --- Pillars ------------------------------------------------------------- */
+.pillarsBlock {
+  margin-top: var(--space-9);
+}
+
+/* Laptop-only portrait; see the 1024px block. */
+.aside {
+  display: none;
+}
+
+.asideFrame {
+  aspect-ratio: 4 / 5;
+}
+
+.asidePlaceholder {
+  position: absolute;
+  inset: 0;
+  background-color: var(--surface-2);
+  background-image:
+    radial-gradient(70% 45% at 50% 100%, rgb(var(--accent-rgb) / 0.34) 0%, transparent 70%),
+    radial-gradient(40% 30% at 70% 20%, rgb(var(--accent-rgb) / 0.06) 0%, transparent 70%);
+}
+
+.pillars {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.pillar {
+  position: relative;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Ember line drawn over the hairline on hover. */
+.pillar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background-color: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.pillarInner {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-4);
+  padding-block: var(--space-6);
+}
+
+.pillarIndex {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-top: 0.2rem;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.pillarNumber {
+  font-family: var(--font-display-stack);
+  font-size: 1.25rem;
+  font-style: italic;
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: lining-nums;
+}
+
+.pillarArrow {
+  flex: none;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+}
+
+.pillarKeyword {
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+.pillarTitle {
+  margin-bottom: var(--space-3);
+  font-size: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
+  line-height: 1.12;
+  color: var(--foreground-soft);
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.pillarText {
+  max-width: 44ch;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.pillarIcon {
+  margin-top: 0.15rem;
+  color: var(--muted);
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .pillar:hover::after {
+    transform: scaleX(1);
+  }
+
+  .pillar:hover .pillarIndex {
+    transform: translateX(4px);
+  }
+
+  .pillar:hover .pillarArrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .pillar:hover .pillarTitle {
+    color: var(--foreground);
+  }
+
+  .pillar:hover .pillarIcon {
+    color: var(--accent);
+  }
+}
+
+/* --- CTA ----------------------------------------------------------------- */
+.cta {
+  display: flex;
+  margin-top: var(--space-7);
+}
+
+@media (max-width: 767px) {
+  .cta > :global(.btn) {
+    width: 100%;
+  }
+}
+
+/* --- Tablet -------------------------------------------------------------- */
+@media (min-width: 768px) {
+  .visual {
+    margin-top: var(--space-9);
+  }
+
+  .visualFrame {
+    aspect-ratio: 16 / 9;
+  }
+
+  .details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  /* Pillars as a 2 × 2 editorial grid. */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-7);
+  }
+
+  .pillarsBlock {
+    margin-top: var(--space-10);
+  }
+
+  .cta {
+    margin-top: var(--space-8);
+  }
+}
+
+/* --- Laptop and up ------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .intro {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--space-5);
+    align-items: end;
+  }
+
+  .header {
+    grid-column: 1 / span 7;
+  }
+
+  .copy {
+    grid-column: 8 / span 5;
+    /* Align the copy's last line with the intro line opposite. */
+    padding-bottom: var(--space-2);
+  }
+
+  .visualFrame {
+    aspect-ratio: 21 / 9;
+  }
+
+  .pillarsBlock {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--space-5);
+    align-items: start;
+  }
+
+  /* Stays in view while the rows scroll past it. */
+  .aside {
+    display: block;
+    grid-column: 1 / span 4;
+    position: sticky;
+    top: calc(var(--nav-h-compact) + var(--space-6));
+  }
+
+  .pillarsColumn {
+    grid-column: 6 / span 7;
+  }
+
+  .pillarsBlock[data-aside="false"] .pillarsColumn {
+    grid-column: 1 / -1;
+  }
+
+  /* Back to a single column of rows beside the portrait. */
+  .pillars {
+    display: block;
+  }
+
+  .pillarInner {
+    grid-template-columns: 4rem minmax(0, 1fr) auto;
+    gap: var(--space-5);
+    padding-block: var(--space-7);
+  }
+}
+
+/* --- Reduced motion ------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  /* MotionConfig strips transforms but not clip-path: fade instead of wipe. */
+  .imageReveal {
+    clip-path: none !important;
+  }
+
+  .visualFrame:hover .photo,
+  .visualFrame:hover .visualPlaceholder,
+  .pillar:hover .pillarIndex,
+  .pillar:hover .pillarArrow {
+    transform: none;
+  }
+}

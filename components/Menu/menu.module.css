@@ -1,0 +1,711 @@
+/* ==========================================================================
+   Menu — editorial dish grid with category tabs
+   ========================================================================== */
+
+.section {
+  position: relative;
+  /* Background: the .tone-* class on the element (globals.css). */
+  isolation: isolate;
+}
+
+/* Very quiet warm wash from the top, echoing the hero's firelight. */
+.section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(
+    80% 45% at 72% 0%,
+    rgb(var(--accent-rgb) / 0.1) 0%,
+    transparent 70%
+  );
+}
+
+/* --- Header -------------------------------------------------------------- */
+.header {
+  max-width: 44rem;
+  margin-bottom: var(--space-8);
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  color: var(--accent);
+}
+
+.eyebrow::before {
+  content: "";
+  width: clamp(1.5rem, 4vw, 3rem);
+  height: 1px;
+  background-color: var(--accent);
+}
+
+.heading {
+  margin-bottom: var(--space-5);
+}
+
+.supporting {
+  max-width: 38ch;
+}
+
+/* --- Search -------------------------------------------------------------- */
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 30rem;
+  margin-bottom: var(--space-6);
+  padding-inline: var(--space-5);
+  background-color: rgb(var(--ivory-rgb) / 0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition:
+    border-color var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .search:hover {
+    border-color: var(--border-strong);
+  }
+}
+
+/* Ring the whole field rather than the bare input. */
+.search:focus-within {
+  border-color: var(--accent);
+  background-color: rgb(var(--ivory-rgb) / 0.05);
+  /* Same ring as the form inputs: a 1px colour change alone is faint. */
+  box-shadow: 0 0 0 3px rgb(var(--accent-rgb) / 0.2);
+}
+
+.searchIcon {
+  flex: none;
+  color: var(--muted);
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.search:focus-within .searchIcon {
+  color: var(--accent);
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  /* Comfortable target, and ≥16px so iOS does not zoom on focus. */
+  min-height: 3.25rem;
+  padding: 0;
+  font-family: var(--font-body-stack);
+  font-size: 1rem;
+  color: var(--foreground);
+  background: none;
+  border: 0;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--muted);
+}
+
+/* The native control duplicates our own clear button. */
+.searchInput::-webkit-search-cancel-button,
+.searchInput::-webkit-search-decoration {
+  appearance: none;
+  display: none;
+}
+
+.searchClear {
+  display: grid;
+  place-items: center;
+  flex: none;
+  /* 44px target; the negative margin keeps the field's visual padding. */
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-right: calc(var(--space-4) * -1);
+  color: var(--muted);
+  border-radius: 50%;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .searchClear:hover {
+    color: var(--foreground);
+    background-color: rgb(var(--ivory-rgb) / 0.08);
+  }
+}
+
+/* --- Category tabs ------------------------------------------------------- */
+.tablistWrap {
+  position: relative;
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+
+.tablist {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(var(--space-4), 2vw, var(--space-6));
+  /* Scrolls rather than wrapping on narrow screens; contained here, so it can
+     never push the page sideways. */
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tablist::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  position: relative;
+  flex: none;
+  padding: 0 0 var(--space-4);
+  /* Comfortable target without inflating the strip; short labels ("All")
+     still get a full-width target. */
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  font-family: var(--font-body-stack);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+  background: none;
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+/* Underline that grows from the centre, matching the navbar's link treatment. */
+.tab::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background-color: var(--accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .tab:hover {
+    color: var(--foreground-soft);
+  }
+}
+
+.tab[aria-selected="true"] {
+  color: var(--accent);
+}
+
+.tab[aria-selected="true"]::after {
+  transform: scaleX(1);
+}
+
+.tab:focus-visible {
+  outline-offset: -2px;
+}
+
+/* --- Secondary filters --------------------------------------------------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-7);
+}
+
+.filterGroups {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+}
+
+.filterGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.filterLabel {
+  margin-right: var(--space-2);
+  color: var(--muted);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  /* Compact under a mouse; a full 44px under a finger (see pointer: coarse). */
+  min-height: 2.25rem;
+  padding: 0 var(--space-4);
+  font-family: var(--font-body-stack);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  transition:
+    color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .chip:hover {
+    color: var(--foreground-soft);
+    border-color: var(--border-strong);
+  }
+}
+
+/* Pressed state carries colour, a filled ground and a heavier border — never
+   colour alone, and aria-pressed states it outright. */
+.chip[aria-pressed="true"] {
+  color: var(--on-accent);
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (hover: hover) {
+  .chip[aria-pressed="true"]:hover {
+    color: var(--on-accent);
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
+}
+
+.chipPopular svg {
+  color: var(--accent);
+}
+
+.chipPopular[aria-pressed="true"] svg {
+  color: var(--on-accent);
+}
+
+.resultRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-left: auto;
+}
+
+.count {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.clear {
+  min-height: 2.25rem;
+  padding: 0 var(--space-2);
+  font-family: var(--font-body-stack);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--accent);
+  background: none;
+  border-bottom: 1px solid rgb(var(--accent-rgb) / 0.4);
+  border-radius: 0;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .clear:hover {
+    color: var(--accent-hover);
+    border-bottom-color: var(--accent-hover);
+  }
+}
+
+/* Under a finger, every filter control is a full 44px target. */
+@media (pointer: coarse) {
+  .chip,
+  .clear {
+    min-height: 2.75rem;
+  }
+}
+
+/* --- Grid ---------------------------------------------------------------- */
+/* Relative so AnimatePresence can pop the outgoing list out of flow. */
+.panel {
+  position: relative;
+}
+
+.panel:focus-visible {
+  outline-offset: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6) var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+}
+
+/* --- Card ---------------------------------------------------------------- */
+/* A dark panel with a thin warm-brown border; on hover it lifts, the border
+   turns copper and a soft copper glow gathers underneath. */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(to bottom, var(--surface), rgb(var(--bg-alt-rgb) / 0.9));
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+/* Copper hairline along the top edge, drawn in on hover. */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-hover), transparent);
+  transform: scaleX(0);
+  transition: transform var(--duration-slow) var(--ease-out);
+  pointer-events: none;
+}
+
+.media {
+  aspect-ratio: 4 / 3;
+  border-radius: 0;
+}
+
+/* The panel supplies the outline; drop the frame's own hairline. */
+.media::after {
+  box-shadow: none;
+}
+
+/* Phones: one column of up to 32 dishes. A wider, shorter frame keeps each
+   photograph generous while roughly a third less scrolling per dish. */
+@media (max-width: 639px) {
+  .grid {
+    row-gap: var(--space-5);
+  }
+
+  .media {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+.image {
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+/* Designed stand-in for missing photography: a warm-lit panel carrying the
+   dish's initial. --i varies the light's position so the grid is not uniform. */
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display-stack);
+  font-size: clamp(3.5rem, 9vw, 5.5rem);
+  font-weight: 300;
+  line-height: 1;
+  color: rgb(var(--ivory-rgb) / 0.16);
+  background-image: radial-gradient(
+    70% 70% at calc(28% + (var(--i) * 17%)) calc(30% + (var(--i) * 11%)),
+    rgb(var(--accent-rgb) / 0.22) 0%,
+    transparent 68%
+  );
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+/* --- Popular badge ------------------------------------------------------- */
+.popular {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.45rem var(--space-3);
+  font-family: var(--font-body-stack);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--foreground);
+  background-color: rgb(var(--bg-rgb) / 0.66);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  transition:
+    color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out);
+}
+
+.popular svg {
+  color: var(--accent);
+}
+
+/* --- Card body ----------------------------------------------------------- */
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--space-5) var(--space-5) var(--space-6);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.category {
+  margin-bottom: var(--space-3);
+  color: var(--accent-hover);
+  font-size: 0.6875rem;
+  letter-spacing: 0.24em;
+}
+
+@media (max-width: 639px) {
+  .body {
+    padding: var(--space-4) var(--space-4) var(--space-5);
+  }
+}
+
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.name {
+  font-family: var(--font-display-stack);
+  font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+/* Dotted leader, the way a printed menu runs name to price. */
+.leader {
+  flex: 1;
+  height: 1px;
+  min-width: var(--space-4);
+  border-bottom: 1px dotted var(--border-strong);
+  transform: translateY(-0.25em);
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+.price {
+  flex: none;
+  font-family: var(--font-body-stack);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.description {
+  margin-bottom: var(--space-4);
+  font-size: var(--text-small);
+  line-height: 1.65;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* --- Dietary tags -------------------------------------------------------- */
+.dietary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: auto 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dietaryTag {
+  padding: 0.3rem var(--space-3);
+  font-family: var(--font-body-stack);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+}
+
+/* Spicy earns the accent; the word still carries the meaning on its own. */
+.dietaryTag[data-tag="spicy"] {
+  color: var(--accent);
+  border-color: rgb(var(--accent-rgb) / 0.35);
+}
+
+/* --- Hover --------------------------------------------------------------- */
+@media (hover: hover) {
+  .card:hover .image,
+  .card:hover .placeholder {
+    transform: scale(1.05);
+  }
+
+  /* The whole card lifts; its border warms to copper under a soft glow. */
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: rgb(var(--accent-rgb) / 0.7);
+    box-shadow:
+      0 24px 48px -24px rgb(0 0 0 / 0.85),
+      0 18px 50px -28px rgb(var(--accent-rgb) / 0.55);
+  }
+
+  .card:hover::before {
+    transform: scaleX(1);
+  }
+
+  /* The dish name leans in and the leader warms to ember; the price and
+     description stay exactly where they are, so nothing reflows to read. */
+  .card:hover .name {
+    transform: translateX(3px);
+  }
+
+  .card:hover .leader {
+    border-bottom-color: rgb(var(--accent-rgb) / 0.55);
+  }
+
+  .card:hover .popular {
+    color: var(--foreground);
+    border-color: var(--border-strong);
+  }
+
+  /* Lifts the frame's built-in tonal wash a little on hover. */
+  .card:hover .media::after {
+    opacity: 0.72;
+  }
+}
+
+.media::after {
+  transition: opacity var(--duration-base) var(--ease-out);
+  opacity: 1;
+}
+
+/* --- Empty state --------------------------------------------------------- */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-9) var(--gutter);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: rgb(var(--ivory-rgb) / 0.02);
+}
+
+.emptyMark {
+  margin-bottom: var(--space-5);
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+.emptyTitle {
+  margin-bottom: var(--space-3);
+  color: var(--foreground);
+}
+
+.emptyBody {
+  max-width: 34ch;
+  margin-bottom: var(--space-6);
+}
+
+.emptyAction {
+  min-height: var(--touch-target);
+  padding: 0 var(--space-6);
+  font-family: var(--font-body-stack);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--foreground);
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  transition:
+    color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .emptyAction:hover {
+    background-color: rgb(var(--ivory-rgb) / 0.07);
+    border-color: var(--foreground);
+  }
+}
+
+/* --- Responsive ---------------------------------------------------------- */
+@media (max-width: 767px) {
+  .search {
+    max-width: none;
+  }
+
+  /* Count and clear get their own line rather than squeezing the chips. */
+  .resultRow {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border);
+  }
+
+  .empty {
+    padding: var(--space-8) var(--space-5);
+  }
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+}
+
+@media (min-width: 1120px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .header {
+    margin-bottom: var(--space-9);
+  }
+}
+
+/* --- Reduced motion ------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .card:hover .image,
+  .card:hover .placeholder,
+  .card:hover .name,
+  .card:hover {
+    transform: none;
+  }
+}
