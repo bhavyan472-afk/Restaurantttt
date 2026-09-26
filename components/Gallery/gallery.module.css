@@ -99,23 +99,29 @@
   transition: transform var(--duration-slow) var(--ease-out);
 }
 
-/* Dish name over the frame's bottom wash (globals .frame::after). */
+/* Dish name on its own dark gradient, so every caption is readable over
+   any photo — bright plates and light backgrounds included. */
 .caption {
   position: absolute;
-  left: var(--space-4);
-  right: var(--space-4);
-  bottom: var(--space-4);
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 2;
+  padding: var(--space-8) var(--space-4) var(--space-4);
   color: var(--foreground);
-  text-shadow: 0 1px 12px rgb(0 0 0 / 0.6);
-  transition: transform var(--duration-base) var(--ease-out);
+  background: linear-gradient(
+    to top,
+    rgb(var(--bg-rgb) / 0.9) 0%,
+    rgb(var(--bg-rgb) / 0.62) 45%,
+    rgb(var(--bg-rgb) / 0) 100%
+  );
+  text-shadow: 0 1px 8px rgb(0 0 0 / 0.5);
+  transition: color var(--duration-base) var(--ease-out);
 }
 
 @media (max-width: 639px) {
   .caption {
-    left: var(--space-3);
-    right: var(--space-3);
-    bottom: var(--space-3);
+    padding: var(--space-7) var(--space-3) var(--space-3);
     font-size: 0.625rem;
   }
 }
@@ -131,14 +137,12 @@
   }
 
   .tile:hover .caption {
-    transform: translateX(3px);
-    color: var(--accent);
+    color: var(--accent-hover);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tile:hover .image,
-  .tile:hover .caption {
+  .tile:hover .image {
     transform: none;
   }
 }

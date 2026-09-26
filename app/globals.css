@@ -7,31 +7,41 @@
 
 /* 1 — TOKENS ------------------------------------------------------------- */
 :root {
-  /* Colour — "Luxury Ember": deep charcoal, burnt copper, ivory. Dark only.
+  /* Colour — "Noir & Gold": deep charcoal, warm espresso brown, cream text,
+     antique gold used only as an accent. Dark only.
+     The base colours and their *-rgb triples are OVERRIDDEN per client from
+     content/restaurant.ts → theme (app/layout.tsx sets them on <html>); the
+     values here are the fallback. Derived shades below use color-mix, so
+     they follow the client's colours automatically.
      The *-rgb triples feed translucent tints: rgb(var(--accent-rgb) / 0.2). */
-  --bg-rgb: 11 10 9;
-  --bg-alt-rgb: 21 17 14;
-  --ivory-rgb: 245 240 232;
-  --ivory-soft-rgb: 222 214 203;
-  --muted-rgb: 169 160 152;
-  --accent-rgb: 200 117 61;
-  --highlight-rgb: 226 163 107;
+  --bg-rgb: 12 11 10;
+  --bg-alt-rgb: 24 19 15;
+  --ivory-rgb: 243 236 224;
+  --ivory-soft-rgb: 222 213 199;
+  --muted-rgb: 170 160 147;
+  --accent-rgb: 198 164 98;
+  --highlight-rgb: 226 200 145;
 
-  --background: #0b0a09; /* page black */
-  --background-alt: #15110e; /* alternating sections */
-  --surface: #191411; /* cards, raised panels */
-  --surface-2: #211a16; /* image placeholders, hover fills */
-  --foreground: #f5f0e8; /* ivory — primary text */
-  --foreground-soft: #ded6cb; /* long-form copy on dark */
-  --muted: #a9a098; /* secondary text (≈7.8:1 on --background) */
-  --accent: #c8753d; /* burnt copper */
-  --accent-hover: #e2a36b; /* copper highlight — text, lines, focus */
-  --accent-fill-hover: #d4834a; /* copper fills on hover */
-  --on-accent: #f5f0e8; /* ivory on copper fills */
-  --border: #3a2a20; /* thin warm-brown hairlines */
-  --border-strong: #5c4432;
-  --glow: 0 0 0 1px rgb(var(--accent-rgb) / 0.35), 0 18px 48px -20px rgb(var(--accent-rgb) / 0.35);
-  /* Form errors: soft terracotta, distinct from the ember accent, ≈7:1 on
+  --background: #0c0b0a; /* deep charcoal-black */
+  --background-alt: #18130f; /* warm espresso brown */
+  --surface: #1a1511; /* cards, raised panels */
+  --foreground: #f3ece0; /* cream — primary text (≈16:1) */
+  --muted: #aaa093; /* warm grey — secondary text (≈7.5:1) */
+  --accent: #c6a462; /* antique gold */
+  --accent-hover: #e2c891; /* pale gold — text, lines, focus */
+  --on-accent: #15110c; /* near-black on gold fills (≈8.5:1) */
+
+  /* Derived — follow the client's theme colours. */
+  --seam: color-mix(in srgb, var(--background) 85%, var(--background-alt)); /* where sections meet */
+  --surface-2: color-mix(in srgb, var(--surface) 75%, var(--foreground) 5%, var(--accent) 20%);
+  --foreground-soft: color-mix(in srgb, var(--foreground) 88%, var(--muted));
+  --accent-fill-hover: color-mix(in srgb, var(--accent) 55%, var(--accent-hover));
+  --border: color-mix(in srgb, var(--background-alt) 78%, var(--accent) 22%); /* hairlines */
+  --border-strong: color-mix(in srgb, var(--background-alt) 55%, var(--accent) 45%);
+  /* Warm, dark treatment applied to every photo inside a .frame. */
+  --photo-grade: sepia(0.16) saturate(0.9) brightness(0.86) contrast(1.06);
+  --glow: 0 0 0 1px rgb(var(--accent-rgb) / 0.3), 0 18px 48px -20px rgb(var(--accent-rgb) / 0.3);
+  /* Form errors: soft terracotta, distinct from the gold accent, ≈7:1 on
      the form cards. Errors also carry an icon and words, never colour alone. */
   --error: #e8957c;
 
@@ -322,37 +332,55 @@ p {
   padding-block: var(--section-space-tight);
 }
 
-/* Section tones — sections alternate page black and the warmer lift, each
-   opened by a thin copper hairline that fades out at both ends and a very
-   low ember glow at the top edge. Set on the <section> alongside .section. */
+/* Section tones — every section has its own dark shade (--tone-bg), set
+   per section below. Each one rises out of, and sinks back into, the same
+   --seam colour, so neighbouring sections blend without a hard edge while
+   their middles still read as distinct rooms. A thin gold hairline fading
+   out at both ends and a very low gold glow open each section. */
 .tone-base,
 .tone-alt {
   --tone-line: linear-gradient(
     90deg,
     transparent,
-    rgb(var(--accent-rgb) / 0.45) 50%,
+    rgb(var(--accent-rgb) / 0.38) 50%,
     transparent
   );
   --tone-glow: radial-gradient(
-    50% 18rem at 50% 0%,
-    rgb(var(--accent-rgb) / 0.07),
+    55% 20rem at 50% 0%,
+    rgb(var(--accent-rgb) / var(--tone-glow-alpha, 0.05)),
     transparent 100%
   );
+  background:
+    var(--tone-line) top center / min(72%, 60rem) 1px no-repeat,
+    var(--tone-glow),
+    linear-gradient(
+      to bottom,
+      var(--seam) 0%,
+      var(--tone-bg) min(14rem, 22%),
+      var(--tone-bg) max(calc(100% - 14rem), 78%),
+      var(--seam) 100%
+    );
 }
 
 .tone-base {
-  background:
-    var(--tone-line) top center / min(72%, 60rem) 1px no-repeat,
-    var(--tone-glow),
-    var(--background);
+  --tone-bg: color-mix(in srgb, var(--background) 85%, var(--background-alt)); /* charcoal */
 }
 
 .tone-alt {
-  background:
-    var(--tone-line) top center / min(72%, 60rem) 1px no-repeat,
-    var(--tone-glow),
-    linear-gradient(to bottom, var(--background-alt), #120f0c);
+  --tone-bg: var(--background-alt); /* espresso */
 }
+
+/* Per-section shades, in page order: charcoal and warm brown alternate, each
+   nudged slightly (mixed from the theme's two backgrounds) so no two rooms
+   are identical. */
+#signature-dishes { --tone-bg: color-mix(in srgb, var(--background) 92%, var(--background-alt)); --tone-glow-alpha: 0.07; }
+#story { --tone-bg: color-mix(in srgb, var(--background-alt) 90%, var(--accent) 3%, var(--background)); }
+#menu { --tone-bg: color-mix(in srgb, var(--background) 80%, var(--background-alt)); }
+#experience { --tone-bg: var(--background-alt); }
+#gallery { --tone-bg: color-mix(in srgb, var(--background) 88%, var(--background-alt)); }
+#reviews { --tone-bg: color-mix(in srgb, var(--background-alt) 92%, var(--background)); }
+#reservations { --tone-bg: color-mix(in srgb, var(--background) 82%, var(--background-alt)); --tone-glow-alpha: 0.07; }
+#visit { --tone-bg: color-mix(in srgb, var(--background-alt) 85%, var(--background)); }
 
 /* Vertical rhythm helper: children are spaced by --stack-gap. */
 .stack {
@@ -415,7 +443,7 @@ p {
   transition: transform var(--duration-base) var(--ease-out);
 }
 
-/* Primary — Reserve a Table: burnt copper, ivory text, a faint inner light
+/* Primary — Reserve a Table: antique gold, near-black text, a faint inner light
    along the top edge so the fill reads as metal rather than flat paint. */
 .btn--primary {
   --btn-bg: var(--accent);
@@ -424,7 +452,7 @@ p {
   box-shadow: inset 0 1px 0 rgb(var(--highlight-rgb) / 0.35);
 }
 
-/* Secondary — Explore Menu: transparent, copper hairline, ivory text. */
+/* Secondary — Explore Menu: transparent, gold hairline, cream text. */
 .btn--secondary {
   --btn-bg: transparent;
   --btn-fg: var(--foreground);
@@ -462,7 +490,7 @@ p {
 }
 
 /* Primary buttons catch a single soft highlight on hover — a sheen moving
-   across the ember, not a flashing effect. Transform-only, so it stays on
+   across the gold, not a flashing effect. Transform-only, so it stays on
    the compositor; the global reduced-motion rule reduces it to nothing. */
 .btn--primary {
   position: relative;
@@ -479,7 +507,7 @@ p {
   background: linear-gradient(
     105deg,
     transparent 30%,
-    rgb(255 240 220 / 0.28) 50%,
+    rgb(255 246 225 / 0.3) 50%,
     transparent 70%
   );
   transform: translateX(-120%);
@@ -552,6 +580,9 @@ p {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* One warm, low-key grade for every food photo, so bright, light-
+     background shots sit with the dark ones instead of glaring. */
+  filter: var(--photo-grade);
 }
 
 /* For clips with a watermark near the bottom-right corner: the video is
@@ -563,17 +594,17 @@ p {
   max-width: none; /* the media reset above caps it at 100% otherwise */
 }
 
-/* Soft warm tonal grade so mixed photography sits together. */
+/* Warm wash plus a soft dark foot, over the photo grade above, so mixed
+   photography reads as one set. */
 .frame::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(
-    to top,
-    rgb(var(--bg-rgb) / 0.32),
-    rgb(var(--bg-rgb) / 0) 45%
-  );
+  background:
+    linear-gradient(to top, rgb(var(--bg-rgb) / 0.38), rgb(var(--bg-rgb) / 0) 45%),
+    radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(var(--bg-rgb) / 0.28) 100%),
+    rgb(var(--accent-rgb) / 0.05);
   box-shadow: inset 0 0 0 1px var(--border);
   border-radius: inherit;
 }
@@ -684,9 +715,11 @@ p {
     transform: none;
   }
 
-  /* Mask reveals (see <Reveal>) resolve as a fade: no wipe. */
-  [data-reveal-clip] {
-    clip-path: none !important;
+  /* Scroll reveals (<Reveal>): everything is simply there — no fade, no
+     slide, nothing waiting to be scrolled to. Beats Motion's inline styles. */
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   /* No magnetic drift. */

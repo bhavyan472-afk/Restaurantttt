@@ -21,7 +21,7 @@ export function SignatureDishGrid({ dishes, startAt }: SignatureDishGridProps) {
             dish={dish}
             image={image}
             number={startAt + index}
-            delay={(index % 3) * 0.1}
+            delay={(index % 3) * 0.05}
           />
         </li>
       ))}

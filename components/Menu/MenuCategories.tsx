@@ -6,6 +6,8 @@ import styles from "./menu.module.css";
 
 type MenuCategoriesProps = {
   active: CategoryFilter;
+  /** A search is showing results from every category. */
+  dimmed?: boolean;
   onChange: (id: CategoryFilter) => void;
 };
 
@@ -13,10 +15,11 @@ type MenuCategoriesProps = {
  * Category switcher, built as a real ARIA tablist.
  *
  * Roving tabindex: only the selected tab is in the tab order, and Arrow /
- * Home / End move between them — so the whole set costs one Tab stop rather
- * than nine, which is the expected behaviour for tabs.
+ * Home / End move between them — so the whole set costs one Tab stop,
+ * which is the expected behaviour for tabs. One category shows at a time;
+ * during a search the strip is dimmed, and picking a tab leaves the search.
  */
-export function MenuCategories({ active, onChange }: MenuCategoriesProps) {
+export function MenuCategories({ active, dimmed = false, onChange }: MenuCategoriesProps) {
   const listRef = useRef<HTMLDivElement>(null);
 
   const focusTab = (index: number) => {
@@ -51,7 +54,7 @@ export function MenuCategories({ active, onChange }: MenuCategoriesProps) {
   };
 
   return (
-    <div className={styles.tablistWrap}>
+    <div className={styles.tablistWrap} data-dimmed={dimmed}>
       <div
         ref={listRef}
         role="tablist"
@@ -66,10 +69,10 @@ export function MenuCategories({ active, onChange }: MenuCategoriesProps) {
               type="button"
               role="tab"
               id={`menu-tab-${category.id}`}
-              aria-selected={selected}
+              aria-selected={selected && !dimmed}
               // Only the active category's panel is rendered, so only the
               // selected tab may point at it.
-              aria-controls={selected ? `menu-panel-${category.id}` : undefined}
+              aria-controls={selected && !dimmed ? `menu-panel-${category.id}` : undefined}
               tabIndex={selected ? 0 : -1}
               className={styles.tab}
               onClick={() => onChange(category.id)}

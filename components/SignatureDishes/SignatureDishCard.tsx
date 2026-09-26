@@ -1,4 +1,4 @@
-import { Reveal } from "@/components/ui/Reveal";
+import { CardReveal, CardRevealPart } from "@/components/ui/CardReveal";
 import type { ResolvedSignatureDish } from "@/lib/signatureDishes";
 import { SignatureDishInfo } from "./SignatureDishInfo";
 import { SignatureMedia } from "./SignatureMedia";
@@ -21,17 +21,21 @@ export function SignatureDishCard({ dish, image, number, delay }: SignatureDishC
 
   return (
     <article className={styles.item} aria-labelledby={headingId}>
-      <Reveal delay={delay}>
-        <SignatureMedia
-          src={image}
-          alt={dish.alt}
-          sizes={SIZES}
-          initial={dish.name.charAt(0)}
-          className={styles.cardFrame}
-          video={dish.video}
-        />
-        <SignatureDishInfo dish={dish} number={number} headingId={headingId} />
-      </Reveal>
+      <CardReveal delay={delay}>
+        <CardRevealPart part="media">
+          <SignatureMedia
+            src={image}
+            alt={dish.alt}
+            sizes={SIZES}
+            initial={dish.name.charAt(0)}
+            className={styles.cardFrame}
+            video={dish.video}
+          />
+        </CardRevealPart>
+        <CardRevealPart part="content">
+          <SignatureDishInfo dish={dish} number={number} headingId={headingId} />
+        </CardRevealPart>
+      </CardReveal>
     </article>
   );
 }

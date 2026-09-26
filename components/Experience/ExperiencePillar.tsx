@@ -17,7 +17,7 @@ type ExperiencePillarProps = {
 export function ExperiencePillar({ pillar, index }: ExperiencePillarProps) {
   return (
     <li className={styles.pillar}>
-      <Reveal delay={index * 0.08} className={styles.pillarInner}>
+      <Reveal delay={index * 0.05} className={styles.pillarInner}>
         <span className={styles.pillarIndex} aria-hidden="true">
           <span className={styles.pillarNumber}>{String(index + 1).padStart(2, "0")}</span>
           <svg

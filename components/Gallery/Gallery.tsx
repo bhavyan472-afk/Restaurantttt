@@ -34,20 +34,20 @@ export function Gallery() {
   if (tiles.length === 0) return null;
 
   return (
-    <section id="gallery" className={`section tone-alt ${styles.section}`} aria-labelledby="gallery-heading">
+    <section id="gallery" className={`section tone-base ${styles.section}`} aria-labelledby="gallery-heading">
       <div className="container">
         <header className={styles.header}>
           <div>
             <Reveal>
               <p className={`label ${styles.eyebrow}`}>{galleryContent.eyebrow}</p>
             </Reveal>
-            <Reveal variant="headingReveal" delay={0.1}>
+            <Reveal variant="headingReveal" delay={0.05}>
               <h2 id="gallery-heading" className="text-section">
                 <Emphasis text={galleryContent.heading} className="text-accent" />
               </h2>
             </Reveal>
           </div>
-          <Reveal delay={0.2}>
+          <Reveal delay={0.1}>
             <p className={`text-body-lg ${styles.intro}`}>{galleryContent.intro}</p>
           </Reveal>
         </header>
@@ -58,7 +58,7 @@ export function Gallery() {
               key={tile.src + tile.caption}
               as="li"
               // Short cascade per row of four, not one long wait down the page.
-              delay={(index % 4) * 0.08}
+              delay={(index % 4) * 0.04}
               className={cn(styles.tile, tile.size && styles[tile.size])}
             >
               <figure className={`frame ${styles.frame}`}>

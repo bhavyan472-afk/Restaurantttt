@@ -72,8 +72,15 @@ export function Button({
         </Link>
       );
     }
+    // Off-site links (e.g. an Order Online provider) open in a new tab.
+    const external = /^https?:\/\//.test(href) && anchorProps.target === undefined;
     return (
-      <a href={href} className={classes} {...anchorProps}>
+      <a
+        href={href}
+        className={classes}
+        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        {...anchorProps}
+      >
         {content}
       </a>
     );

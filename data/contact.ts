@@ -1,55 +1,42 @@
 /**
- * ============================================================================
- *  DEMO DATA — REPLACE WITH CLIENT INFORMATION
- * ============================================================================
- *  Wording for the Contact section only. The FACTS — name, address, phone,
- *  email, hours and social links — are not repeated here; they come from
- *  data/restaurant.ts (`restaurantData`, `location`, `openingHours`,
- *  `socialLinks`), the single source the Location section, the chat and the
- *  SEO data also read.
+ * Wording for the Visit Us section (address, hours, map, contact form).
+ * The heading comes from content/restaurant.ts → visit; the FACTS (address,
+ * phone, email, hours, social links) from the same file via
+ * data/restaurant.ts. This file is template wording only — no client facts.
  */
 
-export const contactCopy = {
-  eyebrow: "Get in Touch",
-  heading: "Let's make it an evening to *remember.*",
-  intro:
-    "Questions, special occasions, private dining, or simply want to say hello? We'd love to hear from you.",
+import { restaurant } from "@/content/restaurant";
 
-  methods: {
-    call: "Call Us",
-    email: "Email Us",
-    find: "Find Us",
-    /** Appended for screen readers to the Find Us link, which opens Maps. */
-    findHint: "(opens directions in Google Maps in a new tab)",
+export const visitCopy = {
+  eyebrow: restaurant.visit.eyebrow,
+  heading: restaurant.visit.heading,
+  intro: restaurant.visit.intro,
+  labels: {
+    address: "Address",
+    hours: "Opening Hours",
+    phone: "Phone",
+    email: "Email",
+    transport: "Getting Here",
+    parking: "Parking",
+    accessibility: "Accessibility",
+    social: "Follow Along",
   },
-
-  hoursLabel: "Dinner Hours",
-  socialLabel: "Follow Along",
-  /** Shown under the icons while socialLinksAreDemo is true. */
+  directions: "Get Directions",
+  directionsHint: "(opens Google Maps in a new tab)",
+  mapTitle: (name: string, address: string) => `Map showing ${name} at ${address}`,
   socialDemoNote: "Demo links — they open each platform's home page.",
-
   /** Keep this free of facilities the restaurant does not actually have. */
-  hospitality: {
-    label: "For Special Occasions",
-    text: "Planning a birthday, anniversary, private dinner, or intimate gathering? Tell us what you're planning and our team can help shape the evening.",
+  message: {
+    label: "Get in Touch",
+    heading: "Planning something *special?*",
+    text: "Birthdays, anniversaries, private dinners or a question about the menu — send us a note and the team will reply by email.",
   },
+};
 
-  ctas: {
-    reserve: {
-      label: "Looking to book a table?",
-      button: "Reserve a Table",
-      href: "#reservations",
-    },
-    directions: {
-      label: "Need directions?",
-      button: "Find Us",
-      href: "#location",
-    },
-  },
-
+export const contactCopy = {
   form: {
     title: "Send us a message",
-    hint: "All fields are required unless marked optional.",
+    hint: "Questions, private dining or a special occasion — we reply by email.",
     labels: {
       name: "Your Name",
       email: "Email Address",
@@ -72,20 +59,20 @@ export const contactCopy = {
       "Private Dining",
       "Special Occasion",
       "Dietary Requirements",
-      "Partnership",
       "Other",
     ],
     submit: "Send Message",
     submitting: "Sending...",
     sent: "Message Sent",
-    demoNote: "Demo contact form — messages are not sent to the restaurant.",
+    demoNote: "Demo form — messages are not sent until email is set up (see README).",
   },
 
   success: {
     heading: "Thank you.",
-    lines: [
-      "Your message has been received in this demo experience.",
-      "The restaurant team will be able to respond once a real contact service is connected.",
+    lines: ["Your message has been sent to the restaurant.", "We'll reply by email as soon as we can."],
+    demoLines: [
+      "Your message has been received in this demo.",
+      "Nothing was sent — email delivery is not set up yet.",
     ],
     again: "Send Another Message",
   },

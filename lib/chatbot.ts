@@ -9,19 +9,21 @@ import {
   type MenuItem,
 } from "@/data/menu";
 import { reservationConfig, reservationCopy } from "@/data/reservations";
-import { location, openingHours, restaurantData } from "@/data/restaurant";
+import { bookingCta, features, openingHours, orderOnline, restaurantData } from "@/data/restaurant";
 import { signatureDishes } from "@/data/signatureDishes";
 import { story } from "@/data/story";
+import { directionsUrl, fullAddress } from "@/lib/location";
 import { normalizeQuery } from "@/lib/menuFilters";
 
 /**
  * AI Concierge — the assistant's brain.
  *
  * ============================================================================
- *  DEMO IMPLEMENTATION. No AI provider is connected. Replies are composed
- *  locally from the site's own data, so the assistant can only say what the
- *  website already says — it never invents a dish, a price or an hour. What
- *  the guest types never leaves the browser.
+ *  No AI provider is connected. Replies are composed locally from the
+ *  client configuration (content/restaurant.ts, via the data/ adapters), so
+ *  the assistant can only say what the website already says — it never
+ *  invents a dish, a price or an hour. What the guest types never leaves
+ *  the browser.
  * ============================================================================
  *
  * To connect a real model, keep `getAssistantResponse`'s signature and
@@ -57,7 +59,8 @@ export type AssistantReply = Pick<ChatMessage, "content" | "actions" | "suggesti
 
 /* --- Links used by replies ---------------------------------------------- */
 
-const RESERVE: ChatAction = { label: "Reserve a Table", href: "#reservations" };
+/** "Reserve a Table" — or Order Online / Visit Us when reservations are off. */
+const RESERVE: ChatAction = { label: bookingCta.label, href: bookingCta.href };
 const MENU: ChatAction = { label: "View the Menu", href: "#menu" };
 const SIGNATURE: ChatAction = { label: "Signature Dishes", href: "#signature-dishes" };
 const STORY: ChatAction = { label: "Our Story", href: "#story" };
@@ -93,20 +96,42 @@ const DIETARY: Record<DietaryTag, RegExp> = {
   spicy: /\b(spicy|chilli|chili|heat)\b/,
 };
 
-const CATEGORY: Record<MenuCategoryId, RegExp> = {
-  starters: /\b(starters?|appetizers?|small plates?)\b/,
-  "soups-salads": /\b(soups?|salads?)\b/,
-  mains: /\b(mains?|main course|entrees?)\b/,
-  pasta: /\b(pasta)\b/,
-  pizza: /\b(pizzas?)\b/,
-  grill: /\b(grill|grilled meats?|steaks?)\b/,
-  desserts: /\b(desserts?|sweets?|pudding)\b/,
-  drinks: /\b(drinks?|cocktails?|beverages?|bar)\b/,
+/** Extra words guests use for common categories, keyed by category id. */
+const CATEGORY_SYNONYMS: Record<string, string[]> = {
+  starters: ["starter", "appetizer", "antipasti", "small plate"],
+  "soups-salads": ["soup", "salad"],
+  mains: ["main", "main course", "entree", "secondi"],
+  pasta: ["pasta", "primi"],
+  pizza: ["pizza"],
+  grill: ["grill", "grilled meat", "steak"],
+  desserts: ["dessert", "sweet", "pudding", "dolci"],
+  drinks: ["drink", "cocktail", "beverage", "bar", "wine"],
 };
+
+const escapeRegex = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/**
+ * One matcher per menu category, built from the client's own category
+ * labels ("Soups & Salads" → soup, salad) plus the synonyms above, so a new
+ * client's categories work without touching this file.
+ */
+const CATEGORY: Record<MenuCategoryId, RegExp> = Object.fromEntries(
+  menuCategories.map((category) => {
+    const words = [
+      ...normalize(category.label)
+        .split(" ")
+        .filter((word) => word.length > 2 && word !== "and"),
+      ...(CATEGORY_SYNONYMS[category.id] ?? []),
+    ].map((word) => word.replace(/s$/, ""));
+    const pattern = [...new Set(words)].map(escapeRegex).join("|");
+    return [category.id, new RegExp(`\\b(${pattern})(e?s)?\\b`)];
+  }),
+);
 
 /** Name words too generic to identify a dish on their own. */
 const NOT_DISH_WORDS = new Set([
-  "ember", "sage", "signature", "seasonal", "fire", "house", "with", "fresh",
+  ...normalize(restaurantData.name).split(" "),
+  "signature", "seasonal", "fire", "house", "with", "fresh",
   "pizza", "salad", "soup", "pasta", "spicy", "water",
 ]);
 
@@ -115,13 +140,16 @@ const INTENT = {
   greeting: /^(hi|hello|hey|good (morning|afternoon|evening)|greetings)\b/,
   thanks: /\b(thanks?|thank you|cheers|much appreciated)\b/,
   reservation: /\b(reserv\w*|book\w*|a table|table for|availability|party of)\b/,
-  popular: /\b(popular|recommend\w*|best|favou?rites?|signature|must try|speciality|specialty|specialities|specialties|what should i (order|get|try))\b/,
+  popular: /\b(popular|recommend\w*|best|favou?rites?|signature|must try|specials?|speciality|specialty|specialities|specialties|what should i (order|get|try))\b/,
   hours: /\b(hours?|opening|open(?! fire)|closed?|closing|what time|when|today|tonight|monday|tuesday|wednesday|thursday|friday|saturday|sunday|weekends?)\b/,
   location: /\b(where|located|location|address|directions?|find you|parking|map|neighbou?rhood)\b/,
   contact: /\b(phone|call|email|e mail|contact|reach|telephone)\b/,
   price: /\b(price|prices|cost|costs|expensive|cheap|how much|budget|pricing)\b/,
   experience: /\b(experience|atmosphere|ambi[ae]nce|vibe|setting|music|interior|decor|dress code|romantic|date night|mood|dining room)\b/,
-  story: /\b(about|story|history|philosophy|background|chef|owner|founded|ember sage|restaurant|concept)\b/,
+  story: new RegExp(
+    `\\b(about|story|history|philosophy|background|chef|owner|founded|restaurant|concept|${escapeRegex(normalize(restaurantData.name))})\\b`,
+  ),
+  order: /\b(order online|online order\w*|delivery|deliver|takeaway|take away|takeout|take out|pick ?up)\b/,
   menu: /\b(menu|food|eat|dishes|serve|cuisine|options|order)\b/,
 };
 
@@ -258,6 +286,12 @@ function hoursReply(): AssistantReply {
 }
 
 function reservationReply(): AssistantReply {
+  if (!features.reservations) {
+    return {
+      content: `We don't take bookings through this website. Please call us on ${restaurantData.phoneDisplay} and we'll be glad to help.`,
+      actions: [{ label: "Call", href: `tel:${restaurantData.phone}` }, RESERVE],
+    };
+  }
   const { minGuests, maxGuests, reservationDurationMinutes } = reservationConfig;
   return {
     content: [
@@ -270,8 +304,11 @@ function reservationReply(): AssistantReply {
 
 function locationReply(): AssistantReply {
   return {
-    content: `You'll find us at ${restaurantData.address}.`,
-    actions: [{ label: "Open in Maps", href: location.mapUrl }, RESERVE],
+    content: `You'll find us at ${fullAddress()}.`,
+    actions: [
+      { label: "Get Directions", href: directionsUrl() },
+      { label: "Visit Us", href: "#visit" },
+    ],
   };
 }
 
@@ -283,6 +320,18 @@ function contactReply(): AssistantReply {
       { label: "Email", href: `mailto:${restaurantData.email}` },
     ],
   };
+}
+
+function orderReply(): AssistantReply {
+  return orderOnline
+    ? {
+        content: "You can order online for delivery or pick-up — the menu and prices are the same as in the restaurant.",
+        actions: [{ label: orderOnline.label, href: orderOnline.href }, MENU],
+      }
+    : {
+        content: `We don't take online orders through this website. Please call us on ${restaurantData.phoneDisplay} and we'll be happy to help.`,
+        actions: [{ label: "Call", href: `tel:${restaurantData.phone}` }, MENU],
+      };
 }
 
 function priceReply(): AssistantReply {
@@ -329,7 +378,7 @@ export function answer(question: string): AssistantReply {
   if (INTENT.identity.test(q)) {
     return {
       content:
-        "I'm the EMBER & SAGE AI Concierge — a demo assistant that answers from this website's content. I'm not a person, and I can't see live availability or take bookings, but I can point you to everything you need.",
+        `I'm the ${restaurantData.name} AI Concierge — an assistant that answers from this website's content. I'm not a person, and I can't see live availability or take bookings, but I can point you to everything you need.`,
       suggestions: true,
     };
   }
@@ -345,6 +394,7 @@ export function answer(question: string): AssistantReply {
     };
   }
 
+  if (INTENT.order.test(q)) return orderReply();
   if (INTENT.reservation.test(q)) return reservationReply();
 
   const dishes = findDishes(q);

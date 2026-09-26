@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { Reveal } from "@/components/ui/Reveal";
-import { ratingSummary, reviewsAreDemo, reviewsCopy as copy } from "@/data/reviews";
+import { ratingSummary, reviewsAreDemo, reviewsCopy as copy, showReviews } from "@/data/reviews";
 import { formatRating, splitReviews } from "@/lib/reviews";
 import { FeaturedReview } from "./FeaturedReview";
 import { ReviewCarousel } from "./ReviewCarousel";
@@ -12,11 +12,14 @@ import styles from "./reviews.module.css";
  * Reviews section. Server component; the only client JS is the carousel
  * and the star entrance.
  *
- * All reviews and the rating summary are DEMO DATA (data/reviews.ts), and
- * while `reviewsAreDemo` is set the section says so beneath the rating. No
- * review platform is named, and no rating markup is emitted for search.
+ * Reviews come only from content/restaurant.ts. Template sample reviews
+ * are shown only in demo mode (and labelled); with no reviews, or the
+ * feature off, the section is not rendered at all. No rating markup is
+ * emitted for search.
  */
 export function Reviews() {
+  if (!showReviews) return null;
+
   const { featured, rest } = splitReviews();
 
   return (
@@ -27,17 +30,17 @@ export function Reviews() {
             <Reveal>
               <p className={`label ${styles.eyebrow}`}>{copy.eyebrow}</p>
             </Reveal>
-            <Reveal variant="headingReveal" delay={0.1}>
+            <Reveal variant="headingReveal" delay={0.05}>
               <h2 id="reviews-heading" className={`text-section ${styles.heading}`}>
                 <Emphasis text={copy.heading} className="text-accent" />
               </h2>
             </Reveal>
-            <Reveal delay={0.2}>
+            <Reveal delay={0.1}>
               <p className={`text-body-lg ${styles.intro}`}>{copy.intro}</p>
             </Reveal>
           </div>
 
-          <Reveal delay={0.25} className={styles.summary}>
+          <Reveal delay={0.12} className={styles.summary}>
             <p className={styles.average}>
               {formatRating(ratingSummary.average)}
               <span className="visually-hidden"> out of 5</span>
@@ -56,7 +59,7 @@ export function Reviews() {
         {featured && <FeaturedReview review={featured} />}
 
         {rest.length > 0 && (
-          <Reveal delay={0.1}>
+          <Reveal delay={0.05}>
             <ReviewCarousel reviews={rest} />
           </Reveal>
         )}

@@ -105,7 +105,7 @@ export function ExperienceVisual({
       </Reveal>
 
       <figcaption>
-        <Reveal variant="fadeIn" delay={0.3}>
+        <Reveal variant="fadeIn" delay={0.12}>
           <ul role="list" className={styles.details}>
             {details.map((detail) => (
               <li key={detail} className={`label ${styles.detail}`}>

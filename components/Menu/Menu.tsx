@@ -6,23 +6,24 @@ import { menuItems } from "@/data/menu";
 import styles from "./menu.module.css";
 
 /**
- * Menu section.
+ * Full Menu: a compact, printed-menu list, one category at a time.
  *
- * Server component: it resolves which dishes actually have photography in
- * /public at build time, the same approach the hero uses for its video. A
- * dish whose file has not been supplied renders a designed placeholder rather
- * than a broken image, and dropping the photo in at
- * /public/images/menu/<id>.webp is all it takes to swap it in.
+ * Server component: it checks at build time which FEATURED dishes actually
+ * have their photo in /public, so a missing file simply shows no photo —
+ * never a broken image. Only featured dishes show a photo.
  */
 export function Menu() {
   const imagesAvailable = menuItems
-    .filter((item) => existsSync(path.join(process.cwd(), "public", item.image)))
+    .filter((item) => {
+      const media = item.video ?? item.image;
+      return item.featured && media && existsSync(path.join(process.cwd(), "public", media));
+    })
     .map((item) => item.id);
 
   return (
     <section
       id="menu"
-      className={`section tone-alt ${styles.section}`}
+      className={`section tone-base ${styles.section}`}
       aria-labelledby="menu-heading"
     >
       <div className="container">

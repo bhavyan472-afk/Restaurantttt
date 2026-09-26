@@ -8,8 +8,9 @@ import { Footer } from "@/components/Footer/Footer";
 import { Navbar } from "@/components/Navbar/Navbar";
 import { CursorHalo } from "@/components/ui/CursorHalo";
 import { MotionProvider } from "@/components/ui/MotionProvider";
-import { restaurantData } from "@/data/restaurant";
+import { features, restaurantData } from "@/data/restaurant";
 import { buildRestaurantJsonLd } from "@/lib/seo";
+import { theme, themeStyle } from "@/lib/theme";
 
 /* Display: elegant editorial serif. Body: clean modern sans (variable font).
    next/font self-hosts both, so there is no layout-shifting swap and no
@@ -60,7 +61,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0f0d0b",
+  themeColor: theme.background,
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -74,7 +75,7 @@ export default function RootLayout({
   const jsonLd = JSON.stringify(buildRestaurantJsonLd()).replace(/</g, "\\u003c");
 
   return (
-    <html lang="en" className={`${display.variable} ${body.variable}`}>
+    <html lang="en" className={`${display.variable} ${body.variable}`} style={themeStyle()}>
       <body>
         <a href="#main" className="skip-link">
           Skip to content
@@ -91,7 +92,7 @@ export default function RootLayout({
           <Footer />
           {/* Interactive enhancement, not page content: renders only its
               launcher until opened, so there is nothing extra to index. */}
-          <Chatbot />
+          {features.aiConcierge && <Chatbot />}
           {/* Desktop fine-pointer only; renders nothing on touch or under
               reduced motion. */}
           <CursorHalo />

@@ -4,7 +4,8 @@ import { VoiceAssistant } from "@/components/CallAssistant/VoiceAssistant";
 import { Emphasis } from "@/components/ui/Emphasis";
 import { Reveal } from "@/components/ui/Reveal";
 import { reservationCopy as copy } from "@/data/reservations";
-import { openingHours } from "@/data/restaurant";
+import { features, openingHours } from "@/data/restaurant";
+import { emailEnabled } from "@/lib/mail";
 import { ReservationForm } from "./ReservationForm";
 import { ReservationImage } from "./ReservationImage";
 import styles from "./reservation.module.css";
@@ -17,9 +18,13 @@ import styles from "./reservation.module.css";
  * the same source as the SEO structured data — so there is one place to
  * change them.
  *
- * The form is a FRONT-END DEMO; see lib/reservationService.ts.
+ * Requests are emailed to the restaurant when email is configured (see
+ * app/actions/reservation.ts); otherwise the form runs as a labelled demo.
+ * Not rendered when reservations are switched off in content/restaurant.ts.
  */
 export function Reservation() {
+  if (!features.reservations) return null;
+
   const image = existsSync(path.join(process.cwd(), "public", copy.image.src))
     ? copy.image.src
     : null;
@@ -38,27 +43,27 @@ export function Reservation() {
             <Reveal>
               <p className={`label ${styles.eyebrow}`}>{copy.eyebrow}</p>
             </Reveal>
-            <Reveal variant="headingReveal" delay={0.1}>
+            <Reveal variant="headingReveal" delay={0.05}>
               <h2 id="reservations-heading" className={`text-section ${styles.heading}`}>
                 <Emphasis text={copy.heading} className="text-accent" />
               </h2>
             </Reveal>
-            <Reveal delay={0.2}>
+            <Reveal delay={0.1}>
               <p className={`text-body-lg ${styles.introText}`}>{copy.intro}</p>
             </Reveal>
-            <Reveal delay={0.3}>
+            <Reveal delay={0.12}>
               <p className={styles.aside}>{copy.aside}</p>
             </Reveal>
           </header>
 
-          <Reveal delay={0.2} className={styles.cardWrap}>
+          <Reveal delay={0.1} className={styles.cardWrap}>
             <div className={styles.card}>
-              <ReservationForm />
+              <ReservationForm emailEnabled={emailEnabled()} />
             </div>
           </Reveal>
 
           <div className={styles.details}>
-            <Reveal delay={0.1} className={styles.info}>
+            <Reveal delay={0.05} className={styles.info}>
               <div className={styles.infoBlock}>
                 <h3 className={`label ${styles.infoLabel}`}>{copy.hoursLabel}</h3>
                 <dl className={styles.hours}>
@@ -76,11 +81,11 @@ export function Reservation() {
                 <p className={styles.note}>{copy.note}</p>
               </div>
 
-              {/* Step 11: "Need help?" — opens the voice assistant. */}
-              <VoiceAssistant />
+              {/* "Need help?" — opens the voice assistant. */}
+              {features.aiConcierge && <VoiceAssistant />}
             </Reveal>
 
-            <Reveal variant="imageReveal" delay={0.2} className={styles.imageReveal}>
+            <Reveal variant="imageReveal" delay={0.1} className={styles.imageReveal}>
               <ReservationImage src={image} alt={copy.image.alt} />
             </Reveal>
           </div>

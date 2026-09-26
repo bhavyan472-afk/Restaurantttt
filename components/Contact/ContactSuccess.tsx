@@ -8,11 +8,11 @@ import { contactCopy } from "@/data/contact";
 import styles from "./contact.module.css";
 
 /**
- * Shown in place of the form after a (demo) submission. It says plainly that
- * nothing reached the restaurant. The heading takes focus on arrival, so
- * keyboard and screen-reader users land on the result.
+ * Shown in place of the form after sending. In demo mode (no email set up)
+ * it says plainly that nothing reached the restaurant. The heading takes
+ * focus on arrival, so keyboard and screen-reader users land on the result.
  */
-export function ContactSuccess({ onReset }: { onReset: () => void }) {
+export function ContactSuccess({ delivered, onReset }: { delivered: boolean; onReset: () => void }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const reduce = useReducedMotion();
   const copy = contactCopy.success;
@@ -52,7 +52,7 @@ export function ContactSuccess({ onReset }: { onReset: () => void }) {
       </h3>
 
       <div className={styles.successText}>
-        {copy.lines.map((line) => (
+        {(delivered ? copy.lines : copy.demoLines).map((line) => (
           <p key={line}>{line}</p>
         ))}
       </div>

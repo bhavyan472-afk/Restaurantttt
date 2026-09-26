@@ -12,11 +12,11 @@ export const metadata: Metadata = {
 };
 
 const swatches = [
-  { token: "--background", value: "#0f0d0b", note: "Page background" },
-  { token: "--surface", value: "#161310", note: "Raised panels" },
+  { token: "--background", value: "#0c0b0a", note: "Page background" },
+  { token: "--surface", value: "#1a1511", note: "Raised panels" },
   { token: "--foreground", value: "#f3ece0", note: "Primary text" },
-  { token: "--muted", value: "#a39a8c", note: "Secondary text" },
-  { token: "--accent", value: "#c96a32", note: "Ember accent" },
+  { token: "--muted", value: "#aaa093", note: "Secondary text" },
+  { token: "--accent", value: "#c6a462", note: "Gold accent" },
   { token: "--border", value: "rgb(243 236 224 / 0.12)", note: "Hairlines" },
 ];
 

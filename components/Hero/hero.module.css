@@ -44,14 +44,6 @@
   opacity: 0;
   transition: opacity 1.2s var(--ease-out);
   pointer-events: none;
-  /* The clip carries a generator watermark near its bottom-right corner
-     (~88–93% across, ~80–87% down). Widening the element to 118% from the
-     left edge keeps at most the left ~85% of the frame on screen at any
-     aspect ratio — object-fit: cover only ever crops more — so the mark is
-     always outside the hero. Remove with a clean encode. */
-  inset: 0 auto 0 0;
-  width: 118%;
-  max-width: none; /* the global media reset caps it at 100% otherwise */
 }
 
 /* A slow breathing drift on the footage itself, layered under the scroll
@@ -77,8 +69,9 @@
 }
 
 /* --- 2. Scrim ------------------------------------------------------------
-   Two passes: a left-weighted wash that buys contrast for the copy, and a
-   vertical one that darkens under the navbar and beneath the content.     */
+   Two passes: a strong dark gradient from the left, so the headline stays
+   readable over any client photo or flames, and a vertical one that darkens
+   under the navbar and beneath the content.                              */
 .scrim {
   position: absolute;
   inset: 0;
@@ -87,10 +80,11 @@
   background-image:
     linear-gradient(
       to right,
-      rgb(var(--bg-rgb) / 0.84) 0%,
-      rgb(var(--bg-rgb) / 0.68) 30%,
-      rgb(var(--bg-rgb) / 0.3) 62%,
-      rgb(var(--bg-rgb) / 0.1) 100%
+      rgb(var(--bg-rgb) / 0.94) 0%,
+      rgb(var(--bg-rgb) / 0.84) 28%,
+      rgb(var(--bg-rgb) / 0.52) 52%,
+      rgb(var(--bg-rgb) / 0.14) 78%,
+      rgb(var(--bg-rgb) / 0.04) 100%
     ),
     linear-gradient(
       to top,
@@ -207,21 +201,17 @@
   text-shadow: 0 2px 40px rgb(var(--bg-rgb) / 0.55);
 }
 
-/* Mask for the line reveal. The padding/margin pair keeps descenders and
-   italic overhang from being clipped by the mask. */
+/* One block per heading line; the break is a design decision. */
 .line {
   display: block;
-  overflow: hidden;
   padding-inline-end: 0.08em;
-  padding-bottom: 0.14em;
-  margin-bottom: -0.14em;
 }
 
 .line > span {
   display: block;
 }
 
-/* Copper, lit from above: the highlight shades into burnt copper. */
+/* Accent, lit from above: the highlight shades into the accent colour. */
 .lineAccent {
   color: var(--accent);
   font-style: italic;
@@ -324,32 +314,20 @@
 /* --- 6. Entrance ---------------------------------------------------------
    CSS rather than Motion: it starts on first paint instead of after the JS
    bundle hydrates, so the heading (the LCP element) is never held back and
-   still appears without JavaScript. Order: label → heading lines →
-   supporting copy → buttons → footer cues. `backwards` fill keeps each
-   element at its start frame through its delay, then hands back to the
-   element's own styles — nothing stays pinned by the animation. */
+   still appears without JavaScript. A small fade + 16px rise, 400ms, 60ms
+   apart: label → heading → supporting copy → buttons → footer cues. No
+   per-line mask or split text. `backwards` fill hands each element back to
+   its own styles once done. */
 .enter,
 .line > span {
-  animation: hero-rise 0.9s var(--ease-out) backwards;
-  animation-delay: calc(0.2s + var(--i, 0) * 0.11s);
-}
-
-/* Each heading line rides up out of its overflow-hidden .line mask. */
-.line > span {
-  animation-name: hero-line;
-  animation-duration: 1.15s;
+  animation: hero-rise 0.4s var(--ease-out) backwards;
+  animation-delay: calc(0.05s + var(--i, 0) * 0.06s);
 }
 
 @keyframes hero-rise {
   from {
     opacity: 0;
-    transform: translateY(22px);
-  }
-}
-
-@keyframes hero-line {
-  from {
-    transform: translateY(105%);
+    transform: translateY(16px);
   }
 }
 

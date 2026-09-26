@@ -28,18 +28,18 @@ export function ExperienceHeader({
           <p className={`label ${styles.eyebrow}`}>{eyebrow}</p>
         </Reveal>
 
-        <Reveal variant="headingReveal" delay={0.1}>
+        <Reveal variant="headingReveal" delay={0.05}>
           <h2 id="experience-heading" className={styles.heading}>
             <Emphasis text={heading} className="text-accent" />
           </h2>
         </Reveal>
 
-        <Reveal delay={0.2}>
+        <Reveal delay={0.1}>
           <p className={`text-body-lg ${styles.introText}`}>{intro}</p>
         </Reveal>
       </header>
 
-      <Reveal delay={0.3} className={styles.copy}>
+      <Reveal delay={0.12} className={styles.copy}>
         {paragraphs.map((paragraph) => (
           <p key={paragraph}>
             <Emphasis text={paragraph} className={styles.highlight} />

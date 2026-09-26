@@ -37,7 +37,7 @@ export function Footer() {
             <FooterBrand />
           </Reveal>
 
-          <Reveal delay={0.32} className={styles.areaCta}>
+          <Reveal delay={0.12} className={styles.areaCta}>
             <div className={styles.cta}>
               <h2 className={styles.ctaHeading}>
                 <Emphasis text={copy.cta.heading} className="text-accent" />
@@ -51,24 +51,24 @@ export function Footer() {
             </div>
           </Reveal>
 
-          <Reveal delay={0.08} className={styles.areaExplore}>
+          <Reveal delay={0.04} className={styles.areaExplore}>
             <FooterNavigation />
           </Reveal>
-          <Reveal delay={0.14} className={styles.areaVisit}>
+          <Reveal delay={0.07} className={styles.areaVisit}>
             <FooterVisit />
           </Reveal>
-          <Reveal delay={0.2} className={styles.areaContact}>
+          <Reveal delay={0.1} className={styles.areaContact}>
             <FooterContact />
           </Reveal>
-          <Reveal delay={0.26} className={styles.areaHours}>
+          <Reveal delay={0.12} className={styles.areaHours}>
             <FooterHours />
           </Reveal>
-          <Reveal delay={0.38} className={styles.areaSocial}>
+          <Reveal delay={0.12} className={styles.areaSocial}>
             <FooterSocials />
           </Reveal>
         </div>
 
-        <Reveal variant="fadeIn" delay={0.2} className={styles.bottom}>
+        <Reveal variant="fadeIn" delay={0.1} className={styles.bottom}>
           <p className={styles.copyright}>
             © {year} {restaurantData.name}. {copy.rights}
           </p>

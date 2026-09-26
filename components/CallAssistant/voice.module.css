@@ -36,6 +36,116 @@
   }
 }
 
+/* --- Floating launcher (home page) --------------------------------------
+   Stacked just above the AI Concierge launcher and centred over it (sizes
+   mirror chatbot.module.css). Dark glass with a gold hairline, so it stays
+   quieter than the gold chat button beside it. */
+.launcher {
+  --voice-size: 3rem;
+  --chat-size: 3.5rem;
+  --edge: max(1rem, env(safe-area-inset-right));
+  --bottom: max(1rem, env(safe-area-inset-bottom));
+
+  position: fixed;
+  /* Phones: beside the chat launcher, in the same bottom row, so the two
+     never take more than one strip of the screen. */
+  right: calc(var(--edge) + var(--chat-size) + var(--space-2));
+  bottom: calc(var(--bottom) + (var(--chat-size) - var(--voice-size)) / 2);
+  z-index: 80; /* the chat's layer: under the navbar, its panel paints over */
+  display: grid;
+  place-items: center;
+  width: var(--voice-size);
+  height: var(--voice-size);
+  color: var(--accent);
+  background:
+    radial-gradient(circle at 50% 30%, rgb(var(--accent-rgb) / 0.16), transparent 70%),
+    rgb(var(--bg-alt-rgb) / 0.88);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(var(--accent-rgb) / 0.5);
+  border-radius: 50%;
+  box-shadow:
+    0 12px 28px -10px rgb(0 0 0 / 0.75),
+    0 0 0 4px rgb(var(--accent-rgb) / 0.06);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out),
+    visibility 0s linear 0s;
+}
+
+/* Tablets and up: stacked just above the chat launcher, centred over it. */
+@media (min-width: 768px) {
+  .launcher {
+    right: calc(var(--edge) + (var(--chat-size) - var(--voice-size)) / 2);
+    bottom: calc(var(--bottom) + var(--chat-size) + var(--space-3));
+  }
+}
+
+@media (min-width: 1024px) {
+  .launcher {
+    --voice-size: 3.25rem;
+    --chat-size: 3.75rem;
+    --edge: max(1.5rem, env(safe-area-inset-right));
+    --bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Name label, slid out to the left on hover/focus (pointer devices). */
+.launcherTip {
+  position: absolute;
+  right: calc(100% + var(--space-3));
+  top: 50%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--foreground);
+  background: rgb(var(--bg-alt-rgb) / 0.94);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  opacity: 0;
+  transform: translate(6px, -50%);
+  pointer-events: none;
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .launcher:hover {
+    color: var(--accent-hover);
+    border-color: var(--accent-hover);
+    box-shadow:
+      0 14px 32px -10px rgb(0 0 0 / 0.8),
+      0 0 0 5px rgb(var(--accent-rgb) / 0.1),
+      0 0 26px -6px rgb(var(--accent-rgb) / 0.55);
+  }
+
+  .launcher:hover .launcherTip,
+  .launcher:focus-visible .launcherTip {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+}
+
+.launcher:focus-visible {
+  outline-offset: 4px;
+}
+
+/* Stepped aside (phones, over the reservation or contact form). */
+.launcher[data-hidden="true"] {
+  opacity: 0 !important;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    visibility 0s linear var(--duration-base);
+}
+
 /* --- Dialog -------------------------------------------------------------- */
 .dialog {
   width: min(31rem, calc(100vw - 2rem));
@@ -350,6 +460,12 @@
   border-radius: 8px;
 }
 
+/* Informational (the microphone prompt), not an error: a softer edge. */
+.notice[data-tone="info"] {
+  border-left-color: rgb(var(--accent-rgb) / 0.5);
+  color: var(--muted);
+}
+
 /* --- Transcript ---------------------------------------------------------- */
 .transcript {
   display: grid;
@@ -575,6 +691,10 @@
   .bars span,
   .spinner {
     animation: none;
+  }
+
+  .launcherTip {
+    transition: none;
   }
 
   .status[data-status="listening"] .ring:first-child {

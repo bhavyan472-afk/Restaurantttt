@@ -26,7 +26,7 @@ export function Experience() {
   return (
     <section
       id="experience"
-      className={`section tone-base ${styles.section}`}
+      className={`section tone-alt ${styles.section}`}
       aria-labelledby="experience-heading"
     >
       <div className="container">

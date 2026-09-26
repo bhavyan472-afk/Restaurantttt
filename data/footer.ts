@@ -1,24 +1,24 @@
 /**
- * ============================================================================
- *  DEMO DATA — REPLACE WITH CLIENT INFORMATION
- * ============================================================================
- *  Wording for the footer only. The FACTS — name, tagline, address, phone,
- *  email, hours and social links — come from data/restaurant.ts; the Explore
- *  links from `footerLinks` in data/navigation.ts.
+ * Footer wording. The statement and backdrop word come from
+ * content/restaurant.ts → brand; the facts (address, phone, email, hours,
+ * social links) from the same file via data/restaurant.ts; the Explore links
+ * from `footerLinks` in data/navigation.ts.
  */
 
+import { restaurant } from "@/content/restaurant";
+import { bookingCta } from "./restaurant";
+
 export const footerCopy = {
-  statement:
-    "An intimate dining experience shaped by fire, craft, seasonal ingredients, and thoughtful hospitality.",
+  statement: restaurant.brand.statement,
 
   /** Large, low-contrast word behind the footer. Decorative only. */
-  backdropWord: "EMBER",
+  backdropWord: restaurant.brand.backdropWord,
 
   cta: {
     heading: "Ready for an evening to *remember?*",
     text: "Join us at the table.",
-    button: "Reserve a Table",
-    href: "#reservations",
+    button: bookingCta.label,
+    href: bookingCta.href,
   },
 
   labels: {

@@ -1,9 +1,10 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { Button } from "@/components/ui/Button";
+import { Emphasis } from "@/components/ui/Emphasis";
 import { Reveal } from "@/components/ui/Reveal";
 import { menuCategories, menuItems } from "@/data/menu";
-import { restaurantData } from "@/data/restaurant";
+import { signatureCopy } from "@/data/signatureDishes";
 import { resolveSignatureDishes } from "@/lib/signatureDishes";
 import { SignatureDishFeatured } from "./SignatureDishFeatured";
 import { SignatureDishGrid } from "./SignatureDishGrid";
@@ -43,22 +44,18 @@ export function SignatureDishes() {
         <header className={styles.header}>
           <div>
             <Reveal>
-              <p className={`label ${styles.eyebrow}`}>From the Ember</p>
+              <p className={`label ${styles.eyebrow}`}>{signatureCopy.eyebrow}</p>
             </Reveal>
 
-            <Reveal variant="headingReveal" delay={0.1}>
+            <Reveal variant="headingReveal" delay={0.05}>
               <h2 id="signature-heading" className="text-section">
-                Signature <span className="text-accent">dishes.</span>
+                <Emphasis text={signatureCopy.heading} className="text-accent" />
               </h2>
             </Reveal>
           </div>
 
-          <Reveal delay={0.2}>
-            <p className={`text-body-lg ${styles.supporting}`}>
-              A collection of dishes that define the {restaurantData.name}{" "}
-              experience — crafted with seasonal ingredients, fire, and
-              intention.
-            </p>
+          <Reveal delay={0.1}>
+            <p className={`text-body-lg ${styles.supporting}`}>{signatureCopy.intro}</p>
           </Reveal>
         </header>
 

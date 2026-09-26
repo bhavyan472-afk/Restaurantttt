@@ -1,4 +1,4 @@
-import { Reveal } from "@/components/ui/Reveal";
+import { CardReveal, CardRevealPart } from "@/components/ui/CardReveal";
 import type { ResolvedSignatureDish } from "@/lib/signatureDishes";
 import { SignatureDishInfo } from "./SignatureDishInfo";
 import { SignatureMedia } from "./SignatureMedia";
@@ -22,20 +22,26 @@ export function SignatureDishFeatured({ dish, image }: SignatureDishFeaturedProp
 
   return (
     <article className={`${styles.item} ${styles.featured}`} aria-labelledby={headingId}>
-      <Reveal variant="scaleReveal" className={styles.featuredMedia}>
-        <SignatureMedia
-          src={image}
-          alt={dish.alt}
-          sizes={SIZES}
-          initial={dish.name.charAt(0)}
-          className={styles.featuredFrame}
-          video={dish.video}
-        />
-      </Reveal>
+      {/* Two grid columns, so each side is its own card reveal; the text
+          side waits a beat so it still lands after the photograph. */}
+      <CardReveal className={styles.featuredMedia}>
+        <CardRevealPart part="media">
+          <SignatureMedia
+            src={image}
+            alt={dish.alt}
+            sizes={SIZES}
+            initial={dish.name.charAt(0)}
+            className={styles.featuredFrame}
+            video={dish.video}
+          />
+        </CardRevealPart>
+      </CardReveal>
 
-      <Reveal delay={0.2} className={styles.featuredInfo}>
-        <SignatureDishInfo dish={dish} number={1} headingId={headingId} featured />
-      </Reveal>
+      <CardReveal delay={0.18} className={styles.featuredInfo}>
+        <CardRevealPart part="content">
+          <SignatureDishInfo dish={dish} number={1} headingId={headingId} featured />
+        </CardRevealPart>
+      </CardReveal>
     </article>
   );
 }

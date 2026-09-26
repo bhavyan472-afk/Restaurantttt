@@ -12,9 +12,12 @@ import {
  *
  * Pure functions over the single `menuItems` source of truth — nothing here
  * mutates or copies the dataset. The UI owns the state; this owns the rules.
+ *
+ * The menu shows ONE category at a time (so it stays short with 80+ dishes);
+ * a search looks across every category.
  */
 
-export type CategoryFilter = "all" | MenuCategoryId;
+export type CategoryFilter = MenuCategoryId;
 export type DietaryFilter = "all" | DietaryTag;
 
 export type MenuFilterState = {
@@ -26,16 +29,15 @@ export type MenuFilterState = {
 
 export const defaultFilters: MenuFilterState = {
   query: "",
-  category: "all",
+  category: menuCategories[0]?.id ?? "",
   dietary: "all",
   popularOnly: false,
 };
 
-/** Category controls, with "All" ahead of the real categories. */
-export const categoryFilters: { id: CategoryFilter; label: string }[] = [
-  { id: "all", label: "All" },
-  ...menuCategories,
-];
+/** Category tabs — only categories that have dishes. */
+export const categoryFilters: { id: CategoryFilter; label: string }[] = menuCategories.filter(
+  (category) => menuItems.some((item) => item.category === category.id),
+);
 
 /**
  * Dietary controls, limited to tags the menu actually uses — so the filter can
@@ -67,7 +69,7 @@ export function normalizeQuery(query: string): string {
 /**
  * Everything a dish can be found by: its name, description, category label and
  * dietary labels. Without the category label, searching "pizza" would miss
- * "Ember Margherita" — the word appears nowhere in that dish's own text.
+ * "Margherita" — the word appears nowhere in that dish's own text.
  *
  * Built once at module load; the menu is static.
  */
@@ -95,7 +97,7 @@ function matchesQuery(item: MenuItem, normalized: string): boolean {
 }
 
 /**
- * category AND search AND dietary AND popular.
+ * (category, or search across all categories) AND dietary AND popular.
  */
 export function filterMenu(
   items: readonly MenuItem[],
@@ -104,7 +106,7 @@ export function filterMenu(
   const normalized = normalizeQuery(filters.query);
 
   return items.filter((item) => {
-    if (filters.category !== "all" && item.category !== filters.category) {
+    if (normalized === "" && item.category !== filters.category) {
       return false;
     }
     if (!matchesQuery(item, normalized)) return false;
@@ -119,12 +121,17 @@ export function filterMenu(
   });
 }
 
-/** Whether anything is narrowing the menu — drives the Clear control. */
+/** Whether a search or filter is narrowing the menu — drives Clear. */
 export function hasActiveFilters(filters: MenuFilterState): boolean {
-  return (
-    normalizeQuery(filters.query) !== "" ||
-    filters.category !== "all" ||
-    filters.dietary !== "all" ||
-    filters.popularOnly
-  );
+  return normalizeQuery(filters.query) !== "" || filters.dietary !== "all" || filters.popularOnly;
+}
+
+/** Search results grouped by category, in menu order. */
+export function groupByCategory(items: readonly MenuItem[]): { id: string; label: string; items: MenuItem[] }[] {
+  return menuCategories
+    .map((category) => ({
+      ...category,
+      items: items.filter((item) => item.category === category.id),
+    }))
+    .filter((group) => group.items.length > 0);
 }

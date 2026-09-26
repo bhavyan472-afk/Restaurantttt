@@ -213,6 +213,11 @@
   outline-offset: -2px;
 }
 
+/* During a search the results span every category. */
+.tablistWrap[data-dimmed="true"] .tab {
+  opacity: 0.6;
+}
+
 /* --- Secondary filters --------------------------------------------------- */
 .filters {
   display: flex;
@@ -341,8 +346,10 @@
   }
 }
 
-/* --- Grid ---------------------------------------------------------------- */
-/* Relative so AnimatePresence can pop the outgoing list out of flow. */
+/* --- List ---------------------------------------------------------------- */
+/* One category at a time, as a printed menu reads: name, leader, price on
+   one line, the description and tags beneath. Two columns from laptops, so
+   a long category stays short; featured dishes carry a small photo. */
 .panel {
   position: relative;
 }
@@ -351,161 +358,69 @@
   outline-offset: 8px;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-6) var(--space-5);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  width: 100%;
+/* A quick fade when the category or filters change — never a wait. */
+.listIn {
+  animation: menu-list-in 0.25s var(--ease-out);
 }
 
-/* --- Card ---------------------------------------------------------------- */
-/* A dark panel with a thin warm-brown border; on hover it lifts, the border
-   turns copper and a soft copper glow gathers underneath. */
-.card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-  background: linear-gradient(to bottom, var(--surface), rgb(var(--bg-alt-rgb) / 0.9));
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  transition:
-    transform var(--duration-base) var(--ease-out),
-    border-color var(--duration-base) var(--ease-out),
-    box-shadow var(--duration-base) var(--ease-out);
-}
-
-/* Copper hairline along the top edge, drawn in on hover. */
-.card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 3;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent-hover), transparent);
-  transform: scaleX(0);
-  transition: transform var(--duration-slow) var(--ease-out);
-  pointer-events: none;
-}
-
-.media {
-  aspect-ratio: 4 / 3;
-  border-radius: 0;
-}
-
-/* The panel supplies the outline; drop the frame's own hairline. */
-.media::after {
-  box-shadow: none;
-}
-
-/* Phones: one column of up to 32 dishes. A wider, shorter frame keeps each
-   photograph generous while roughly a third less scrolling per dish. */
-@media (max-width: 639px) {
-  .grid {
-    row-gap: var(--space-5);
-  }
-
-  .media {
-    aspect-ratio: 16 / 10;
+@keyframes menu-list-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
   }
 }
 
-.image {
-  transition: transform var(--duration-slow) var(--ease-out);
+.group + .group {
+  margin-top: var(--space-8);
 }
 
-/* Designed stand-in for missing photography: a warm-lit panel carrying the
-   dish's initial. --i varies the light's position so the grid is not uniform. */
-.placeholder {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-family: var(--font-display-stack);
-  font-size: clamp(3.5rem, 9vw, 5.5rem);
-  font-weight: 300;
-  line-height: 1;
-  color: rgb(var(--ivory-rgb) / 0.16);
-  background-image: radial-gradient(
-    70% 70% at calc(28% + (var(--i) * 17%)) calc(30% + (var(--i) * 11%)),
-    rgb(var(--accent-rgb) / 0.22) 0%,
-    transparent 68%
-  );
-  transition: transform var(--duration-slow) var(--ease-out);
-}
-
-/* --- Popular badge ------------------------------------------------------- */
-.popular {
-  position: absolute;
-  top: var(--space-4);
-  left: var(--space-4);
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 0.45rem var(--space-3);
-  font-family: var(--font-body-stack);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--foreground);
-  background-color: rgb(var(--bg-rgb) / 0.66);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-pill);
-  transition:
-    color var(--duration-base) var(--ease-out),
-    border-color var(--duration-base) var(--ease-out);
-}
-
-.popular svg {
+.groupTitle {
+  margin-bottom: var(--space-4);
   color: var(--accent);
 }
 
-/* --- Card body ----------------------------------------------------------- */
-.body {
+.list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
   display: flex;
-  flex-direction: column;
+  gap: var(--space-4);
+  align-items: flex-start;
+  padding-block: var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+
+.thumb {
+  flex: none;
+  width: 4.5rem;
+  aspect-ratio: 1;
+  border-radius: var(--radius);
+}
+
+.rowBody {
   flex: 1;
-  padding: var(--space-5) var(--space-5) var(--space-6);
-  transition: transform var(--duration-base) var(--ease-out);
-}
-
-.category {
-  margin-bottom: var(--space-3);
-  color: var(--accent-hover);
-  font-size: 0.6875rem;
-  letter-spacing: 0.24em;
-}
-
-@media (max-width: 639px) {
-  .body {
-    padding: var(--space-4) var(--space-4) var(--space-5);
-  }
+  min-width: 0;
 }
 
 .titleRow {
   display: flex;
   align-items: baseline;
   gap: var(--space-3);
-  margin-bottom: var(--space-3);
 }
 
 .name {
   font-family: var(--font-display-stack);
-  font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  font-size: clamp(1.1875rem, 1.1rem + 0.35vw, 1.375rem);
   font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
   color: var(--foreground);
-  transition: transform var(--duration-base) var(--ease-out);
 }
 
 /* Dotted leader, the way a printed menu runs name to price. */
@@ -515,7 +430,6 @@
   min-width: var(--space-4);
   border-bottom: 1px dotted var(--border-strong);
   transform: translateY(-0.25em);
-  transition: border-color var(--duration-base) var(--ease-out);
 }
 
 .price {
@@ -529,29 +443,57 @@
 }
 
 .description {
-  margin-bottom: var(--space-4);
+  margin-top: var(--space-2);
   font-size: var(--text-small);
-  line-height: 1.65;
+  line-height: 1.6;
   color: var(--muted);
   text-wrap: pretty;
 }
 
-/* --- Dietary tags -------------------------------------------------------- */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.meta:empty {
+  display: none;
+}
+
+/* --- Chef's favourite + dietary tags ------------------------------------- */
+.popular {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-body-stack);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-hover);
+}
+
+.popular svg {
+  color: var(--accent);
+}
+
 .dietary {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  margin: auto 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .dietaryTag {
-  padding: 0.3rem var(--space-3);
+  padding: 0.2rem var(--space-2);
   font-family: var(--font-body-stack);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
   border: 1px solid var(--border);
@@ -562,52 +504,6 @@
 .dietaryTag[data-tag="spicy"] {
   color: var(--accent);
   border-color: rgb(var(--accent-rgb) / 0.35);
-}
-
-/* --- Hover --------------------------------------------------------------- */
-@media (hover: hover) {
-  .card:hover .image,
-  .card:hover .placeholder {
-    transform: scale(1.05);
-  }
-
-  /* The whole card lifts; its border warms to copper under a soft glow. */
-  .card:hover {
-    transform: translateY(-6px);
-    border-color: rgb(var(--accent-rgb) / 0.7);
-    box-shadow:
-      0 24px 48px -24px rgb(0 0 0 / 0.85),
-      0 18px 50px -28px rgb(var(--accent-rgb) / 0.55);
-  }
-
-  .card:hover::before {
-    transform: scaleX(1);
-  }
-
-  /* The dish name leans in and the leader warms to ember; the price and
-     description stay exactly where they are, so nothing reflows to read. */
-  .card:hover .name {
-    transform: translateX(3px);
-  }
-
-  .card:hover .leader {
-    border-bottom-color: rgb(var(--accent-rgb) / 0.55);
-  }
-
-  .card:hover .popular {
-    color: var(--foreground);
-    border-color: var(--border-strong);
-  }
-
-  /* Lifts the frame's built-in tonal wash a little on hover. */
-  .card:hover .media::after {
-    opacity: 0.72;
-  }
-}
-
-.media::after {
-  transition: opacity var(--duration-base) var(--ease-out);
-  opacity: 1;
 }
 
 /* --- Empty state --------------------------------------------------------- */
@@ -683,16 +579,15 @@
   }
 }
 
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-6);
+@media (max-width: 479px) {
+  .thumb {
+    width: 3.75rem;
   }
 }
 
-@media (min-width: 1120px) {
-  .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+@media (min-width: 1024px) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .header {
@@ -702,10 +597,7 @@
 
 /* --- Reduced motion ------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
-  .card:hover .image,
-  .card:hover .placeholder,
-  .card:hover .name,
-  .card:hover {
-    transform: none;
+  .listIn {
+    animation: none;
   }
 }

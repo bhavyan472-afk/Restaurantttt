@@ -69,7 +69,7 @@ export function StoryImage({ main, detail, caption }: StoryImageProps) {
       {/* The detail sits outside the curtain-revealed frame: inside it, the
           clip-path would cut off the part that overhangs. */}
       <div className={styles.visualMedia}>
-        <Reveal variant="imageReveal" delay={0.15} className={styles.imageReveal}>
+        <Reveal variant="imageReveal" delay={0.07} className={styles.imageReveal}>
           <div ref={ref} className={cn("frame", styles.mainFrame)}>
             <m.div className={styles.mediaInner} data-parallax={enabled} style={{ y }}>
               <Photo image={main} sizes={MAIN_SIZES} monogram />
@@ -78,7 +78,7 @@ export function StoryImage({ main, detail, caption }: StoryImageProps) {
         </Reveal>
 
         {detail && (
-          <Reveal delay={0.55} className={styles.detail}>
+          <Reveal delay={0.12} className={styles.detail}>
             <div className={cn("frame", styles.detailFrame)}>
               <Photo image={detail} sizes={DETAIL_SIZES} />
             </div>
@@ -87,7 +87,7 @@ export function StoryImage({ main, detail, caption }: StoryImageProps) {
       </div>
 
       <figcaption className={`label ${styles.caption}`}>
-        <Reveal variant="fadeIn" delay={0.7} as="span">
+        <Reveal variant="fadeIn" delay={0.12} as="span">
           {caption}
         </Reveal>
       </figcaption>

@@ -4,7 +4,7 @@ import { AnimatePresence, m, useReducedMotion, type Variants } from "motion/reac
 import { useCallback, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { navLinks } from "@/data/navigation";
-import { restaurantData } from "@/data/restaurant";
+import { bookingCta, orderOnline, restaurantData } from "@/data/restaurant";
 import { easeOut } from "@/lib/animations";
 import styles from "./navbar.module.css";
 
@@ -233,13 +233,22 @@ export function MobileMenu({
             </nav>
 
             <m.div variants={itemVariants} className={styles.overlayFooter}>
-              <Button
-                href="#reservations"
-                className={styles.overlayCta}
-                onClick={(event) => handleLinkClick(event, "#reservations")}
-              >
-                Reserve a Table
-              </Button>
+              <div className={styles.overlayCtas}>
+                <Button
+                  href={bookingCta.href}
+                  className={styles.overlayCta}
+                  {...(bookingCta.external
+                    ? {}
+                    : { onClick: (event: React.MouseEvent<HTMLAnchorElement>) => handleLinkClick(event, bookingCta.href) })}
+                >
+                  {bookingCta.label}
+                </Button>
+                {orderOnline && bookingCta.href !== orderOnline.href && (
+                  <Button variant="secondary" arrow={false} href={orderOnline.href} className={styles.overlayCta}>
+                    {orderOnline.label}
+                  </Button>
+                )}
+              </div>
 
               <button
                 type="button"

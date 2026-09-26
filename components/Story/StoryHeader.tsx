@@ -15,16 +15,19 @@ export function StoryHeader({ eyebrow, heading }: StoryHeaderProps) {
         <p className={`label ${styles.eyebrow}`}>{eyebrow}</p>
       </Reveal>
 
-      <h2 id="story-heading" className={`text-section ${styles.heading}`}>
-        {heading.map((line, index) => (
-          // Each line reveals on its own, so the break is a design decision.
-          // The space keeps "fire. Crafted" apart in the accessible name.
-          <Reveal key={line} as="span" variant="headingReveal" delay={0.1 + index * 0.1} className={styles.headingLine}>
-            {index > 0 && " "}
-            <Emphasis text={line} className="text-accent" />
-          </Reveal>
-        ))}
-      </h2>
+      {/* One reveal for the whole heading; each line is still its own block,
+          so the break is a design decision. The space keeps "fire. Crafted"
+          apart in the accessible name. */}
+      <Reveal variant="headingReveal" delay={0.05}>
+        <h2 id="story-heading" className={`text-section ${styles.heading}`}>
+          {heading.map((line, index) => (
+            <span key={line} className={styles.headingLine}>
+              {index > 0 && " "}
+              <Emphasis text={line} className="text-accent" />
+            </span>
+          ))}
+        </h2>
+      </Reveal>
     </header>
   );
 }

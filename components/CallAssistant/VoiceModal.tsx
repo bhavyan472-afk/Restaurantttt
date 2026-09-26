@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { CloseIcon, SparklesIcon } from "@/components/Chatbot/ChatIcons";
 import { voiceCopy } from "@/data/voiceAssistant";
 import { restaurantData } from "@/data/restaurant";
@@ -16,9 +16,30 @@ type VoiceModalProps = {
   onOpenChat: () => void;
   /** "Reserve a Table" was followed. */
   onReserve: () => void;
+  /** Start listening as soon as it opens (the floating mic button). */
+  autoStart?: boolean;
 };
 
-const TITLE_ID = "voice-title";
+/** "prompt" while the browser will still ask for the microphone. */
+function useMicPermission(active: boolean) {
+  const [state, setState] = useState<PermissionState | "unknown">("unknown");
+  useEffect(() => {
+    if (!active || !navigator.permissions?.query) return;
+    let status: PermissionStatus | null = null;
+    const update = () => status && setState(status.state);
+    // Firefox rejects "microphone" as a permission name — the hint just stays off.
+    navigator.permissions
+      .query({ name: "microphone" as PermissionName })
+      .then((result) => {
+        status = result;
+        update();
+        result.addEventListener("change", update);
+      })
+      .catch(() => {});
+    return () => status?.removeEventListener("change", update);
+  }, [active]);
+  return state;
+}
 
 /**
  * The voice assistant, in a native <dialog> opened with showModal(): the
@@ -29,10 +50,15 @@ const TITLE_ID = "voice-title";
  *
  * The conversation survives closing; the microphone and speech do not.
  */
-export function VoiceModal({ open, onClose, onOpenChat, onReserve }: VoiceModalProps) {
+export function VoiceModal({ open, onClose, onOpenChat, onReserve, autoStart = false }: VoiceModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  // Two entry points (reservation card, floating mic) → two dialogs on the page.
+  const titleId = useId();
   const voice = useVoiceAssistant();
-  const { shutdown } = voice;
+  const { shutdown, startListening } = voice;
+  const micPermission = useMicPermission(open);
+  const startRef = useRef(startListening);
+  startRef.current = startListening;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -41,11 +67,13 @@ export function VoiceModal({ open, onClose, onOpenChat, onReserve }: VoiceModalP
       dialog.showModal();
       // The main control, not the close button, is where the guest starts.
       dialog.querySelector<HTMLElement>("[data-autofocus]")?.focus();
+      // Opened from a mic button: that tap was the request to listen.
+      if (autoStart) startRef.current();
     } else if (!open && dialog.open) {
       shutdown();
       dialog.close();
     }
-  }, [open, shutdown]);
+  }, [open, shutdown, autoStart]);
 
   const issueIsBlocking = voice.blocked;
 
@@ -53,7 +81,7 @@ export function VoiceModal({ open, onClose, onOpenChat, onReserve }: VoiceModalP
     <dialog
       ref={dialogRef}
       className={styles.dialog}
-      aria-labelledby={TITLE_ID}
+      aria-labelledby={titleId}
       onCancel={(event) => {
         event.preventDefault(); // Escape: close our way, with cleanup
         onClose();
@@ -68,7 +96,7 @@ export function VoiceModal({ open, onClose, onOpenChat, onReserve }: VoiceModalP
           <span className={styles.headerMark} aria-hidden="true">
             <SparklesIcon size={18} />
           </span>
-          <h2 id={TITLE_ID} className={styles.title}>
+          <h2 id={titleId} className={styles.title}>
             {restaurantData.name}
             <span className={styles.subtitle}>AI Concierge · Voice</span>
           </h2>
@@ -83,6 +111,12 @@ export function VoiceModal({ open, onClose, onOpenChat, onReserve }: VoiceModalP
         </header>
 
         <VoiceStatus status={voice.status} blocked={issueIsBlocking} interim={voice.interim} />
+
+        {voice.status === "listening" && micPermission === "prompt" && (
+          <p className={styles.notice} data-tone="info">
+            {voiceCopy.permissionHint}
+          </p>
+        )}
 
         {voice.issue && (
           <p className={styles.notice} role="alert" data-blocking={issueIsBlocking}>

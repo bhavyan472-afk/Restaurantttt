@@ -197,6 +197,63 @@
   }
 }
 
+/* Optional "Order Online": secondary, shown from 1280px in the bar (and
+   always in the mobile menu), so the main button keeps its room. */
+.orderWrap {
+  display: none;
+  --btn-radius: 10px;
+  --btn-min-h: 3rem;
+  --btn-pad: var(--space-5);
+  --btn-font-size: 0.71875rem;
+  --btn-tracking: 0.14em;
+}
+
+@media (min-width: 1280px) {
+  .orderWrap {
+    display: contents;
+  }
+
+  .actions {
+    gap: var(--space-3);
+  }
+}
+
+/* --- Login ------------------------------------------------------------- */
+/* Visible at every width, the rightmost control once the hamburger goes.
+   Secondary style — gold hairline over smoked glass — so it sits beside
+   "Reserve a Table" without competing with it. */
+.login {
+  --btn-radius: 10px;
+  --btn-min-h: 2.75rem;
+  --btn-pad: var(--space-4);
+  --btn-font-size: 0.75rem;
+  --btn-tracking: 0.16em;
+  --btn-bg: rgb(var(--bg-rgb) / 0.35);
+  backdrop-filter: blur(8px);
+}
+
+.login :global(.btn__label) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.loginIcon {
+  flex: none;
+  color: var(--accent-hover);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .login:hover {
+    transform: translateY(-1px);
+  }
+
+  .login:hover .loginIcon {
+    transform: scale(1.08);
+  }
+}
+
 /* --- Hamburger ----------------------------------------------------------- */
 .burger {
   display: grid;
@@ -329,10 +386,15 @@
   gap: var(--space-5);
 }
 
-.overlayCta {
-  --btn-radius: 10px;
+.overlayCtas {
+  display: grid;
+  gap: var(--space-3);
   flex: 1;
   max-width: 22rem;
+}
+
+.overlayCta {
+  --btn-radius: 10px;
 }
 
 .overlayClose {
@@ -361,9 +423,36 @@
 }
 
 /* --- Responsive ---------------------------------------------------------- */
+/* Narrow phones: the logo, Login and the hamburger share ~320px. */
+@media (max-width: 379px) {
+  .inner {
+    gap: var(--space-3);
+  }
+
+  .actions {
+    gap: var(--space-2);
+  }
+
+  .login {
+    --btn-pad: var(--space-3);
+    --btn-tracking: 0.12em;
+  }
+}
+
+/* Smallest phones: the word stays, the glyph goes. */
+@media (max-width: 359px) {
+  .loginIcon {
+    display: none;
+  }
+}
+
 @media (min-width: 768px) {
   .ctaWrap {
     display: contents;
+  }
+
+  .actions {
+    gap: var(--space-3);
   }
 
   .overlayInner {
@@ -383,6 +472,12 @@
   .ctaWrap {
     --btn-min-h: 3rem;
     --btn-pad: var(--space-6);
+    --btn-font-size: 0.71875rem;
+  }
+
+  .login {
+    --btn-min-h: 3rem;
+    --btn-pad: var(--space-5);
     --btn-font-size: 0.71875rem;
   }
 }
@@ -409,8 +504,52 @@
     --btn-tracking: 0.12em;
   }
 
-  .ctaWrap .btn__arrow {
+  /* :global — .btn__arrow is a global class; a bare selector here would be
+     hashed by CSS Modules and match nothing. */
+  .ctaWrap :global(.btn__arrow) {
     display: none;
+  }
+
+  /* Room for Login: text only, and a touch tighter all round. */
+  .inner {
+    gap: var(--space-4);
+  }
+
+  .actions {
+    gap: var(--space-2);
+  }
+
+  .navList {
+    gap: 0.75rem;
+  }
+
+  .navLink {
+    letter-spacing: 0.04em;
+  }
+
+  .login {
+    --btn-pad: var(--space-3);
+    --btn-tracking: 0.12em;
+  }
+
+  .loginIcon {
+    display: none;
+  }
+}
+
+/* Mid laptops (1280–1439): Login added a button's width; win it back from
+   the link spacing and tracking rather than dropping anything. */
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .navList {
+    gap: 1.125rem;
+  }
+
+  .navLink {
+    letter-spacing: 0.12em;
+  }
+
+  .ctaWrap {
+    --btn-pad: var(--space-5);
   }
 }
 
@@ -425,7 +564,9 @@
     min-height: var(--nav-h);
   }
 
-  .ctaWrap:hover .cta {
+  .ctaWrap:hover .cta,
+  .login:hover,
+  .login:hover .loginIcon {
     transform: none;
   }
 }

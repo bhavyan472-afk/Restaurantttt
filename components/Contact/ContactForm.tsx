@@ -41,19 +41,20 @@ const SENT_HOLD_MS = 900;
 type Status =
   | { kind: "editing" }
   | { kind: "sending" }
-  | { kind: "sent" }
-  | { kind: "thanked" }
+  | { kind: "sent"; delivered: boolean }
+  | { kind: "thanked"; delivered: boolean }
   | { kind: "failed"; message: string };
 
 /**
- * The contact form — a FRONT-END DEMO (see lib/contactService.ts).
+ * The contact form. Messages are emailed to the restaurant when email is
+ * configured (app/actions/contact.ts), otherwise it runs as a labelled demo.
  *
  * Same pattern as the reservation form, whose controls it shares: errors are
  * derived, never stored; a field shows its error once it has been left or
  * once submit has been tried, and clears the moment it is fixed. noValidate
  * turns the browser's own bubbles off so every message is ours and inline.
  */
-export function ContactForm() {
+export function ContactForm({ emailEnabled }: { emailEnabled: boolean }) {
   const [values, setValues] = useState<ContactValues>(emptyContact);
   const [touched, setTouched] = useState<Set<FieldName>>(new Set());
   const [attempted, setAttempted] = useState(false);
@@ -73,9 +74,10 @@ export function ContactForm() {
   /* Hold "Message Sent" on the button for a beat, then show the panel. */
   useEffect(() => {
     if (status.kind !== "sent") return;
-    const timer = window.setTimeout(() => setStatus({ kind: "thanked" }), SENT_HOLD_MS);
+    const { delivered } = status;
+    const timer = window.setTimeout(() => setStatus({ kind: "thanked", delivered }), SENT_HOLD_MS);
     return () => window.clearTimeout(timer);
-  }, [status.kind]);
+  }, [status]);
 
   const busy = status.kind === "sending" || status.kind === "sent";
 
@@ -93,8 +95,8 @@ export function ContactForm() {
 
     setStatus({ kind: "sending" });
     try {
-      await submitContactMessage(values);
-      setStatus({ kind: "sent" });
+      const { delivered } = await submitContactMessage(values);
+      setStatus({ kind: "sent", delivered });
     } catch (error) {
       setStatus({
         kind: "failed",
@@ -137,7 +139,7 @@ export function ContactForm() {
           animate={{ opacity: 1, y: 0, transition: { duration: 0.6, ease: easeOut } }}
           exit={{ opacity: 0, transition: { duration: 0.2 } }}
         >
-          <ContactSuccess onReset={reset} />
+          <ContactSuccess delivered={status.delivered} onReset={reset} />
         </m.div>
       ) : (
         <m.form
@@ -296,7 +298,7 @@ export function ContactForm() {
               )}
             </Button>
 
-            <p className={formStyles.demoNote}>{copy.demoNote}</p>
+            {!emailEnabled && <p className={formStyles.demoNote}>{copy.demoNote}</p>}
           </div>
         </m.form>
       )}

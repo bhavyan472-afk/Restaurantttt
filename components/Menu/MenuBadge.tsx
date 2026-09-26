@@ -1,10 +1,7 @@
 import { dietaryLabels, type DietaryTag } from "@/data/menu";
 import styles from "./menu.module.css";
 
-/**
- * Chef's-favourite marker. Sits over the image as a quiet typographic mark
- * rather than a filled commerce label.
- */
+/** Chef's-favourite marker: a quiet typographic mark beside the tags. */
 export function PopularBadge() {
   return (
     <span className={styles.popular}>

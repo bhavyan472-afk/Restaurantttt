@@ -1,4 +1,6 @@
+import { Emphasis } from "@/components/ui/Emphasis";
 import { Reveal } from "@/components/ui/Reveal";
+import { menuCopy } from "@/data/menu";
 import styles from "./menu.module.css";
 
 /**
@@ -9,20 +11,17 @@ export function MenuHeader() {
   return (
     <header className={styles.header}>
       <Reveal>
-        <p className={`label ${styles.eyebrow}`}>Our Menu</p>
+        <p className={`label ${styles.eyebrow}`}>{menuCopy.eyebrow}</p>
       </Reveal>
 
-      <Reveal variant="headingReveal" delay={0.1}>
+      <Reveal variant="headingReveal" delay={0.05}>
         <h2 id="menu-heading" className={`text-section ${styles.heading}`}>
-          Crafted for the <span className="text-accent">table.</span>
+          <Emphasis text={menuCopy.heading} className="text-accent" />
         </h2>
       </Reveal>
 
-      <Reveal delay={0.2}>
-        <p className={`text-body-lg ${styles.supporting}`}>
-          Seasonal ingredients, fire-led cooking, and carefully crafted dishes
-          designed to be shared, savored, and remembered.
-        </p>
+      <Reveal delay={0.1}>
+        <p className={`text-body-lg ${styles.supporting}`}>{menuCopy.intro}</p>
       </Reveal>
     </header>
   );

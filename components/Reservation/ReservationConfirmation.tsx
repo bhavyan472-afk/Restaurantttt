@@ -11,6 +11,8 @@ import styles from "./reservation.module.css";
 type ReservationConfirmationProps = {
   request: ReservationValues;
   reference: string;
+  /** False in demo mode: nothing was sent to the restaurant. */
+  delivered: boolean;
   onReset: () => void;
 };
 
@@ -19,7 +21,7 @@ type ReservationConfirmationProps = {
  * focus on arrival, so keyboard and screen-reader users land on the result
  * rather than on a form that no longer exists.
  */
-export function ReservationConfirmation({ request, reference, onReset }: ReservationConfirmationProps) {
+export function ReservationConfirmation({ request, reference, delivered, onReset }: ReservationConfirmationProps) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const reduce = useReducedMotion();
 
@@ -63,7 +65,7 @@ export function ReservationConfirmation({ request, reference, onReset }: Reserva
       </svg>
 
       <h3 ref={headingRef} tabIndex={-1} className={`label label--accent ${styles.confirmationHeading}`}>
-        Reservation request received
+        {delivered ? "Request sent to the restaurant" : "Reservation request received"}
       </h3>
 
       <dl className={styles.summary}>
@@ -75,16 +77,21 @@ export function ReservationConfirmation({ request, reference, onReset }: Reserva
         ))}
       </dl>
 
-      <p className={styles.welcome}>{reservationCopy.welcome}</p>
-
-      <p className={styles.demoNotice}>
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-          <circle cx="8" cy="8" r="6.75" stroke="currentColor" strokeWidth="1.2" />
-          <path d="M8 7.25v4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-          <circle cx="8" cy="4.9" r="0.8" fill="currentColor" />
-        </svg>
-        {reservationCopy.demoNotice}
+      <p className={styles.welcome}>
+        {delivered ? `${reservationCopy.sentNotice} ` : ""}
+        {reservationCopy.welcome}
       </p>
+
+      {!delivered && (
+        <p className={styles.demoNotice}>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+            <circle cx="8" cy="8" r="6.75" stroke="currentColor" strokeWidth="1.2" />
+            <path d="M8 7.25v4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+            <circle cx="8" cy="4.9" r="0.8" fill="currentColor" />
+          </svg>
+          {reservationCopy.demoNotice}
+        </p>
+      )}
 
       <Button variant="secondary" arrow={false} className={styles.again} onClick={onReset}>
         Make Another Reservation

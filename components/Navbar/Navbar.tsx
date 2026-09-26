@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { MobileMenu } from "./MobileMenu";
+import { UserIcon } from "@/components/Login/LoginIcons";
+import { LoginModal } from "@/components/Login/LoginModal";
 import { Button } from "@/components/ui/Button";
 import { navLinks, navSectionIds } from "@/data/navigation";
-import { restaurantData } from "@/data/restaurant";
+import { bookingCta, orderOnline, restaurantData } from "@/data/restaurant";
 import { useActiveSection } from "@/lib/useActiveSection";
 import { cn } from "@/lib/utils";
 import styles from "./navbar.module.css";
@@ -21,6 +23,7 @@ import styles from "./navbar.module.css";
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
 
   const sentinelRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -41,6 +44,14 @@ export function Navbar() {
   }, []);
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
+  const closeLogin = useCallback(() => setLoginOpen(false), []);
+
+  /* The bar stays above the mobile overlay, so Login can be pressed with the
+     menu open: close the menu, then open the modal. */
+  const openLogin = useCallback(() => {
+    setMenuOpen(false);
+    setLoginOpen(true);
+  }, []);
 
   return (
     <>
@@ -72,11 +83,32 @@ export function Navbar() {
           </nav>
 
           <div className={styles.actions}>
+            {/* Optional: only when an order-online URL is configured. */}
+            {orderOnline && bookingCta.href !== orderOnline.href && (
+              <div className={styles.orderWrap}>
+                <Button variant="secondary" arrow={false} href={orderOnline.href} className={styles.cta}>
+                  {orderOnline.label}
+                </Button>
+              </div>
+            )}
+
+            {/* The one main button. */}
             <div className={styles.ctaWrap}>
-              <Button href="#reservations" className={styles.cta}>
-                Reserve a Table
+              <Button href={bookingCta.href} className={styles.cta}>
+                {bookingCta.label}
               </Button>
             </div>
+
+            <Button
+              variant="secondary"
+              arrow={false}
+              className={styles.login}
+              onClick={openLogin}
+              aria-haspopup="dialog"
+            >
+              <UserIcon size={16} className={styles.loginIcon} />
+              Login
+            </Button>
 
             <button
               ref={toggleRef}
@@ -105,6 +137,8 @@ export function Navbar() {
         activeId={activeId}
         toggleRef={toggleRef}
       />
+
+      <LoginModal open={loginOpen} onClose={closeLogin} />
     </>
   );
 }

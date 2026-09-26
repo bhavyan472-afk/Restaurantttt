@@ -10,7 +10,7 @@ import styles from "./reviews.module.css";
  */
 export function FeaturedReview({ review }: { review: Review }) {
   return (
-    <Reveal delay={0.1}>
+    <Reveal delay={0.05}>
       <figure className={styles.featured}>
         <span className={styles.quoteMark} aria-hidden="true">
           “

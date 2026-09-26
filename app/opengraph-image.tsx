@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { theme } from "@/lib/theme";
 import { restaurantData } from "@/data/restaurant";
 
 export const alt = `${restaurantData.name} — ${restaurantData.tagline}`;
@@ -24,8 +25,8 @@ export default function OpenGraphImage() {
           flexDirection: "column",
           justifyContent: "center",
           padding: 96,
-          background: "#0f0d0b",
-          color: "#f3ece0",
+          background: theme.background,
+          color: theme.foreground,
           fontFamily: "Georgia, serif",
         }}
       >
@@ -33,7 +34,7 @@ export default function OpenGraphImage() {
           style={{
             fontSize: 22,
             letterSpacing: "0.3em",
-            color: "#c96a32",
+            color: theme.accent,
             fontFamily: "sans-serif",
           }}
         >
@@ -42,7 +43,7 @@ export default function OpenGraphImage() {
         <div style={{ fontSize: 128, marginTop: 28, lineHeight: 1, letterSpacing: "-0.02em" }}>
           {restaurantData.name}
         </div>
-        <div style={{ fontSize: 44, marginTop: 28, color: "#a39a8c", fontStyle: "italic" }}>
+        <div style={{ fontSize: 44, marginTop: 28, color: theme.muted, fontStyle: "italic" }}>
           {restaurantData.tagline}
         </div>
       </div>

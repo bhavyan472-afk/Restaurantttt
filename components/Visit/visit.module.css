@@ -1,0 +1,222 @@
+/* ==========================================================================
+   Visit Us — details beside a live map, then the contact form.
+   ========================================================================== */
+
+.section {
+  position: relative;
+  /* Background: the .tone-* class on the element (globals.css). */
+  isolation: isolate;
+}
+
+/* --- Header -------------------------------------------------------------- */
+.header {
+  max-width: 44rem;
+  margin-bottom: var(--space-8);
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  color: var(--accent);
+}
+
+.eyebrow::before {
+  content: "";
+  width: clamp(1.5rem, 4vw, 3rem);
+  height: 1px;
+  background-color: var(--accent);
+}
+
+.heading {
+  margin-bottom: var(--space-5);
+}
+
+.intro {
+  max-width: 40ch;
+}
+
+/* --- Details + map ------------------------------------------------------- */
+.top,
+.bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7);
+}
+
+.bottom {
+  margin-top: var(--space-9);
+}
+
+.details {
+  display: grid;
+  gap: var(--space-6);
+  align-content: start;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  margin: 0;
+}
+
+.fact {
+  min-width: 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.fact dd {
+  margin: 0;
+}
+
+.factLabel {
+  display: block;
+  margin-bottom: var(--space-3);
+  color: var(--accent);
+}
+
+.address {
+  display: flex;
+  flex-direction: column;
+  font-style: normal;
+  font-size: var(--text-body-lg);
+  line-height: 1.6;
+  color: var(--foreground-soft);
+}
+
+.hours {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hoursRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  column-gap: var(--space-4);
+  font-size: 0.9375rem;
+  color: var(--foreground-soft);
+}
+
+.hoursTime {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.contactLink {
+  /* Short text, full-height touch target. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-bottom: 0;
+  background-position: 0 calc(100% - 0.6rem);
+  font-size: var(--text-body-lg);
+  overflow-wrap: anywhere;
+}
+
+.note {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--foreground-soft);
+}
+
+.directions {
+  justify-self: start;
+}
+
+/* --- Map ----------------------------------------------------------------- */
+.mapWrap {
+  min-width: 0;
+}
+
+.map {
+  aspect-ratio: 4 / 5;
+  box-shadow: 0 40px 80px -40px rgb(0 0 0 / 0.7);
+}
+
+/* The frame's warm wash would dull a real map; keep only its hairline. */
+.map::after {
+  background: none;
+}
+
+.embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  /* Muted, dark treatment so Google's light tiles sit in the dark theme. */
+  filter: grayscale(1) invert(0.92) contrast(0.85) brightness(0.95) sepia(0.15);
+}
+
+/* --- Message + form ------------------------------------------------------ */
+.aside {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+.aside .factLabel {
+  margin-bottom: 0;
+}
+
+.asideHeading {
+  color: var(--foreground);
+}
+
+.asideText {
+  max-width: 38ch;
+  color: var(--foreground-soft);
+}
+
+.cardWrap {
+  min-width: 0;
+}
+
+/* --- Responsive ---------------------------------------------------------- */
+@media (max-width: 767px) {
+  .directions {
+    justify-self: stretch;
+  }
+}
+
+@media (min-width: 768px) {
+  .facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-6);
+  }
+
+  .factWide {
+    grid-column: 1 / -1;
+  }
+
+  .map {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (min-width: 1024px) {
+  .top {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    column-gap: var(--space-9);
+    align-items: stretch;
+  }
+
+  .bottom {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: var(--space-9);
+    align-items: start;
+  }
+
+  .map {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 30rem;
+  }
+}

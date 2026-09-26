@@ -15,11 +15,11 @@ type StoryContentProps = {
 export function StoryContent({ lead, paragraphs, closing }: StoryContentProps) {
   return (
     <div className={styles.content}>
-      <Reveal delay={0.2}>
+      <Reveal delay={0.1}>
         <p className={styles.lead}>{lead}</p>
       </Reveal>
 
-      <Reveal delay={0.3} className={styles.body}>
+      <Reveal delay={0.12} className={styles.body}>
         {paragraphs.map((paragraph) => (
           <p key={paragraph}>
             <Emphasis text={paragraph} className={styles.highlight} />
@@ -27,7 +27,7 @@ export function StoryContent({ lead, paragraphs, closing }: StoryContentProps) {
         ))}
       </Reveal>
 
-      <Reveal delay={0.4}>
+      <Reveal delay={0.12}>
         <p className={styles.closing}>
           {closing.map((line) => (
             <span key={line} className={styles.closingLine}>

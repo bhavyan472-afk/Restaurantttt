@@ -28,7 +28,7 @@ export function resolveSignatureDishes(): ResolvedSignatureDish[] {
     // Fail the build loudly rather than render a dish with no price.
     if (!item) {
       throw new Error(
-        `Signature dish "${dish.id}" has no matching entry in data/menu.ts. ` +
+        `Signature dish "${dish.id}" has no matching menu item in content/restaurant.ts. ` +
           `Its id must match a menu item's id.`,
       );
     }
@@ -42,9 +42,9 @@ export function resolveSignatureDishes(): ResolvedSignatureDish[] {
       category: category?.label ?? "",
       label: dish.label,
       description: dish.description,
-      alt: dish.alt ?? item.alt,
-      images: [dish.image, item.image],
-      video: dish.video ?? item.video,
+      alt: dish.alt ?? item.alt ?? item.name,
+      images: [dish.image, item.image].filter((src): src is string => Boolean(src)),
+      video: dish.video,
     };
   });
 }

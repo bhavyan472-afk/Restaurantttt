@@ -3,8 +3,10 @@
 import { AnimatePresence, m } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { chatbotCopy } from "@/data/chatbot";
+import { restaurantData } from "@/data/restaurant";
 import type { ChatMessage } from "@/lib/chatbot";
 import { onOpenChatbot } from "@/lib/chatbotBridge";
+import { useStepAside } from "@/lib/useStepAside";
 import { CloseIcon, ConciergeIcon } from "./ChatIcons";
 import { ChatWindow } from "./ChatWindow";
 import styles from "./chatbot.module.css";
@@ -32,7 +34,6 @@ export function Chatbot() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
   const [thinking, setThinking] = useState(false);
-  const [hideLauncher, setHideLauncher] = useState(false);
 
   const launcherRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -75,28 +76,9 @@ export function Chatbot() {
     return () => cancelAnimationFrame(frame);
   }, [open]);
 
-  /* On phones, step aside while the reservation or contact form is on
-     screen: the launcher would otherwise sit over their full-width controls. */
-  useEffect(() => {
-    const targets = ["reservations", "contact-form"]
-      .map((id) => document.getElementById(id))
-      .filter((el): el is HTMLElement => el !== null);
-    if (targets.length === 0) return;
-    const phone = window.matchMedia("(max-width: 767px)");
-    const onScreen = new Set<Element>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) onScreen.add(entry.target);
-          else onScreen.delete(entry.target);
-        }
-        setHideLauncher(phone.matches && onScreen.size > 0);
-      },
-      { rootMargin: "0px 0px -20% 0px" },
-    );
-    targets.forEach((target) => observer.observe(target));
-    return () => observer.disconnect();
-  }, []);
+  /* On phones, step aside over the menu list and the forms, so the
+     launcher never covers prices, fields or submit buttons. */
+  const hideLauncher = useStepAside();
 
   const ask = useCallback(async (text: string) => {
     const question = text.trim();
@@ -163,7 +145,7 @@ export function Chatbot() {
         data-hidden={hideLauncher && !open}
         aria-expanded={open}
         aria-controls={open ? PANEL_ID : undefined}
-        aria-label={open ? "Close the AI Concierge" : "Open the EMBER & SAGE AI Concierge"}
+        aria-label={open ? "Close the AI Concierge" : `Open the ${restaurantData.name} AI Concierge`}
         onClick={() => (open ? close() : setOpen(true))}
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}

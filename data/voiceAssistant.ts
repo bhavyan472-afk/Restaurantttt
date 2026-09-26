@@ -9,6 +9,8 @@
  *  does not place a phone call, and no voice provider is connected.
  */
 
+import { restaurant } from "@/content/restaurant";
+
 export const voiceCopy = {
   cta: {
     eyebrow: "Need Help?",
@@ -23,12 +25,17 @@ export const voiceCopy = {
     },
     listening: { label: "Listening...", text: "I'm listening." },
     thinking: { label: "Thinking...", text: "Let me find that for you." },
-    speaking: { label: "Speaking...", text: "EMBER & SAGE AI Concierge" },
+    speaking: { label: "Speaking...", text: `${restaurant.brand.name} AI Concierge` },
     unavailable: { label: "Voice unavailable", text: "" },
   },
   /** Always visible in the modal: what this is, and what it is not. */
   demoNote:
     "Voice mode is currently available as a website demo. It never places a phone call. Your browser turns speech into text, and some browsers use an online speech service to do so.",
+  /** Shown while the browser's microphone prompt is still unanswered. */
+  permissionHint:
+    "Your browser will ask to use your microphone. Choose “Allow” so I can hear you — it's only used while I'm listening.",
+  /** The floating mic button on the home page. */
+  launcher: { label: "Voice Assistant", aria: `Talk to the ${restaurant.brand.name} voice assistant` },
   fallback: "You can still use our AI Concierge chat or reservation form.",
   preferTyping: "Prefer typing?",
 };

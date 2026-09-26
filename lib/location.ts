@@ -2,7 +2,7 @@ import { location, restaurantData, type Location } from "@/data/restaurant";
 
 /**
  * Everything the page says about where the restaurant is, derived from the
- * ONE location record in data/restaurant.ts — so the address, the map label
+ * ONE address in content/restaurant.ts — so the address, the map label
  * and the directions link can never drift apart.
  */
 
@@ -41,7 +41,11 @@ export function directionsUrl(loc: Location = location): string {
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
 }
 
-/** "123 Culinary Avenue" → "Culinary Avenue", for the illustrated map's street label. */
-export function streetName(loc: Location = location): string {
-  return loc.street.replace(/^\s*\d+[a-z]?\s+/i, "");
+/**
+ * Google Maps embed for the Visit section, built from the name and address
+ * in content/restaurant.ts. The public embed URL needs no API key.
+ */
+export function mapEmbedUrl(loc: Location = location): string {
+  const query = `${restaurantData.name}, ${fullAddress(loc)}`;
+  return `https://maps.google.com/maps?q=${encodeURIComponent(query)}&z=15&output=embed`;
 }

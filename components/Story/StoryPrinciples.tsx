@@ -10,7 +10,7 @@ export function StoryPrinciples({ principles }: { principles: StoryPrinciple[] }
     <ol role="list" className={styles.principles} aria-label="Our principles">
       {principles.map((principle, index) => (
         <li key={principle.title} className={styles.principle}>
-          <Reveal delay={index * 0.12}>
+          <Reveal delay={index * 0.05}>
             <p className={`label ${styles.principleCount}`} aria-hidden="true">
               <span className={styles.principleNumber}>{pad(index + 1)}</span>
               {" / "}

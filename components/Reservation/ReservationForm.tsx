@@ -69,7 +69,7 @@ function focusField(field: FieldName) {
 type Status =
   | { kind: "editing" }
   | { kind: "submitting" }
-  | { kind: "confirmed"; request: ReservationValues; reference: string }
+  | { kind: "confirmed"; request: ReservationValues; reference: string; delivered: boolean }
   | { kind: "failed"; message: string };
 
 /**
@@ -80,7 +80,12 @@ type Status =
  * fixed. The browser's own validation is off (noValidate) so every message
  * is ours, inline, and announced.
  */
-export function ReservationForm() {
+type ReservationFormProps = {
+  /** Email delivery is configured (resolved on the server). */
+  emailEnabled: boolean;
+};
+
+export function ReservationForm({ emailEnabled }: ReservationFormProps) {
   const [values, setValues] = useState<ReservationValues>(initialValues);
   const [touched, setTouched] = useState<Set<FieldName>>(new Set());
   const [attempted, setAttempted] = useState(false);
@@ -142,8 +147,8 @@ export function ReservationForm() {
 
     setStatus({ kind: "submitting" });
     try {
-      const { reference } = await submitReservation(values);
-      setStatus({ kind: "confirmed", request: values, reference });
+      const { reference, delivered } = await submitReservation(values);
+      setStatus({ kind: "confirmed", request: values, reference, delivered });
     } catch (error) {
       setStatus({
         kind: "failed",
@@ -181,6 +186,7 @@ export function ReservationForm() {
           <ReservationConfirmation
             request={status.request}
             reference={status.reference}
+            delivered={status.delivered}
             onReset={reset}
           />
         </m.div>
@@ -344,9 +350,11 @@ export function ReservationForm() {
               )}
             </Button>
 
-            <p className={styles.demoNote}>
-              Demo booking form — requests are not sent to the restaurant.
-            </p>
+            {!emailEnabled && (
+              <p className={styles.demoNote}>
+                Demo booking form — requests are not sent to the restaurant.
+              </p>
+            )}
           </div>
         </m.form>
       )}
